@@ -55,6 +55,15 @@ public class User {
 		return true;
 	}
 
+	public boolean addContactMessage(String username, Message msg){
+		if (username == null || !contacts.contains(username) || msg == null)
+			return false;
+		
+		ArrayList<Message> arrayAux = contacts_messages.get(username);
+		arrayAux.add(msg);
+		Lastmessage = msg;
+		return true;
+		}
 
 }
 
