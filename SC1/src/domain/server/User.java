@@ -18,6 +18,7 @@ public class User {
 		contacts_messages = new HashMap<String, ArrayList<Message>>();
 		contacts = new ArrayList <> ();
 		groups = new ArrayList <> ();
+		Lastmessage = null;
 	}
 	
 	public String getUsername (){
@@ -38,6 +39,9 @@ public class User {
 		if (username == null || !contacts.contains(username))
 			return false;
 		contacts.remove(username);
+		
+		//Remove contacto e as suas conversas com ele 
+		contacts_messages.remove(username);
 		return true;
 	}
 	
