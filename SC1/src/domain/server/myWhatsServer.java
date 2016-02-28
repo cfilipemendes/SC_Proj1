@@ -57,7 +57,7 @@ public class myWhatsServer{
 	private static boolean pass = false;
 	private static String flags = "-p-m-f-r-a-d";
 	private static StringBuilder y;
-
+	//onde eu quiser
 	//-1 x == null
 	//-2 flag -p n e a primeira
 	//-3 argumento da pass e uma flag
