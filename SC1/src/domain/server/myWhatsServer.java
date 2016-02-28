@@ -178,43 +178,70 @@ public class myWhatsServer{
 				}
 				
 				int test = validate(args);
+				String newPw = "";
+				
 				outStream.writeObject(test);
-
+				
+				//verifica que ha erro ou ha falta de pass
+				if (test != 1 || test != -10){
+					outStream.writeObject(test);
+					this.currentThread().interrupt();
+					return;
+				}
 				//verifica se nao existe password
-				if (test == -10){
-					outStream.writeObject(-10);
-					//verifica se o hashmap contem o utilizador indicado
-					if (!userMap.containsKey(args[1])){
-
-					}
-					else{
-
+				else if (test == -10){
+					while(true){	
+						outStream.writeObject(test);
+						newPw = (String)inStream.readObject();
+						//verifica se o hashmap nao contem o utilizador indicado
+						if (!userMap.containsKey(args[1])){
+							userMap.put(args[1], new User (args[1],newPw));
+							break;
+						}
+						//pass incorrecta
+						if (!verifyPw(args[1],newPw))
+							test = -11;
+						//tudo correcto
+						else{
+							break;
+						}
 					}
 				}
 				else{
-					if (!userMap.containsKey(args[1])){
+					if (!userMap.containsKey(args[1]))
 						userMap.put(args[1], new User (args[1],args[4]));
-					}
-					//fez o login bem sucedido
-					else if (args[4].equals(userMap.get(args[1]).getPass())){
-
-					}
-					//informa que a pass esta incorrecta
-					else{
-
+					//pass incorrecta
+					else if (!verifyPw(args[1],args[4])){
+						while(true){
+							//-11 significa pass incorrecta
+							outStream.writeObject(-11);
+							newPw = (String)inStream.readObject();
+							if (verifyPw(args[1],newPw))
+								break;
+						}
 					}
 				}
+				//esta correcto, fez login com sucesso
+				//realiza a doOperations(args)
+				doOperations(args);
 
-
-
+				
 				outStream.close();
 				inStream.close();
 
 				socket.close();
 
-			} catch (IOException e) {
+			} catch (IOException | ClassNotFoundException e) {
 				e.printStackTrace();
 			}
+		}
+
+		private void doOperations(String[] args) {
+			
+		}
+
+		private boolean verifyPw(String user, String newPw) {
+			return newPw.equals(userMap.get(user).getPass());
 		}
 	}
 
