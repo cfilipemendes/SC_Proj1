@@ -78,7 +78,6 @@ public class myWhatsServer{
 					e1.printStackTrace();
 				}
 				
-				int test = validate(args);
 				String newPw = "";
 				
 				outStream.writeObject(test);
