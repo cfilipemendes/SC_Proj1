@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 public class myWhats {
 
+	private static Scanner sc;
 	private static StringBuilder y;
 	private static final String flags = "-p-m-f-r-a-d";
 	private static final Pattern PATTERN = Pattern.compile(
@@ -16,6 +17,8 @@ public class myWhats {
 	private final static int PW_ERROR = -66;
 
 	public static void main (String [] args) throws UnknownHostException, IOException, ClassNotFoundException{
+		sc = new Scanner (System.in);
+		
 		if (args.length < 2){
 			System.err.println("Input insuficiente");
 			return;
@@ -46,7 +49,7 @@ public class myWhats {
 
 		String pwd = null;
 		if (valid == -10)
-			pwd = retryPwd();
+			pwd = retryPwd(sc);
 
 		//Ligacao socket
 		Socket soc = new Socket(ip, Integer.parseInt(port));
@@ -88,28 +91,23 @@ public class myWhats {
 		int fromServer = (int) in.readObject();
 		while(fromServer == PW_ERROR){
 			System.out.print("Password ERRADA!");
-			pwd = retryPwd();
+			pwd = retryPwd(sc);
 			out.writeObject(pwd);
 			fromServer = (int) in.readObject();
 		}
 
 		out.writeObject(argsFinal.length);
 		
+		sc.close();
 		in.close();
 		out.close();
 		soc.close();
 	}
 
-	private static String retryPwd(){
-		Scanner sc = new Scanner(System.in);
+	private static String retryPwd(Scanner sc){
 		System.out.println("Por favor insira a PASSWORD:");
 		String pwd = null;
-		while (sc.hasNextLine()){
-			pwd = sc.nextLine();
-			break;
-		}
-		pwd = pwd.toLowerCase();
-		sc.close();
+		pwd = sc.nextLine();
 		return pwd;
 	}
 
