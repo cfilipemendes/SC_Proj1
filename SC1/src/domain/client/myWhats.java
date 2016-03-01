@@ -43,7 +43,7 @@ public class myWhats {
 			return;
 		}
 
-		String pwd = "";
+		String pwd = null;
 		if (valid == -10){
 			pwd = retryPwd();
 			if (pwd.equals("q"))
@@ -59,7 +59,7 @@ public class myWhats {
 
 		//Modelizacao do array de envio ao servidor!
 		String [] argsFinal;
-		if (!pwd.equals("")){
+		if (pwd != null){
 			argsFinal = new String [args.length];
 			argsFinal[0] = "-p";
 			argsFinal[1] = pwd;
