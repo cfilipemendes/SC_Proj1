@@ -11,21 +11,20 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
 
 //Servidor do servico myWhatsServer
 
 public class myWhatsServer{
 
-	private HashMap <String,User> userMap;
-	private HashMap <String,Group> groupMap;
-
+	private server_skell skell;
+	
 	public static void main(String[] args) {
 		System.out.println("servidor: main");
 		myWhatsServer server = new myWhatsServer();
 		server.startServer();
 	}
 
+	@SuppressWarnings("resource")
 	public void startServer (){
 		ServerSocket sSoc = null;
 
@@ -35,20 +34,19 @@ public class myWhatsServer{
 			System.err.println(e.getMessage());
 			System.exit(-1);
 		}
-
-		userMap = new HashMap <> ();
-		groupMap = new HashMap <> ();
+		
+		//cria um skell do servidor
+		skell = new server_skell();
 
 		while(true) {
 			try {
 				Socket inSoc = sSoc.accept();
-				ServerThread newServerThread = new ServerThread(inSoc);
+				ServerThread newServerThread = new ServerThread(inSoc,skell);
 				newServerThread.start();
 			}
 			catch (IOException e) {
 				e.printStackTrace();
 			}
-
 		}
 		//sSoc.close();
 	}
@@ -58,9 +56,11 @@ public class myWhatsServer{
 	class ServerThread extends Thread {
 
 		private Socket socket = null;
+		private server_skell skell;
 
-		ServerThread(Socket inSoc) {
+		ServerThread(Socket inSoc, server_skell skell) {
 			socket = inSoc;
+			this.skell = skell;
 			System.out.println("thread do server para cada cliente");
 		}
 
@@ -68,80 +68,41 @@ public class myWhatsServer{
 			try {
 				ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
 				ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
-
-				String [] args = null;
-
+				int numArgs;
+				String username;
 				try {
-					args = (String [])inStream.readObject();
+					numArgs = (int) inStream.readObject();
+					username = (String) inStream.readObject();
+					
+
+					//Validar e confirmar que se encontra tudo correcto
+					
+					
+					String aux;
+					//recepcao de parametros do client
+					for(int i = 0; i < numArgs; i++){
+						aux = (String) inStream.readObject();
+						switch (aux) {
+						case "-p":
+							skell.authenticate((String)inStream.readObject(), username);
+							//CONTINUAR POR AQUI!!
+						}
+					}
+					
 					System.out.println("thread: depois de receber os args");
 				}catch (ClassNotFoundException e1) {
 					e1.printStackTrace();
-				}
-				
-				String newPw = "";
-				int test = 0;
-				outStream.writeObject(test);
-				
-				//verifica que ha erro ou ha falta de pass
-				if (test != 1 || test != -10){
-					outStream.writeObject(test);
-					this.currentThread().interrupt();
-					return;
-				}
-				//verifica se nao existe password
-				else if (test == -10){
-					while(true){	
-						outStream.writeObject(test);
-						newPw = (String)inStream.readObject();
-						//verifica se o hashmap nao contem o utilizador indicado
-						if (!userMap.containsKey(args[1])){
-							userMap.put(args[1], new User (args[1],newPw));
-							break;
-						}
-						//pass incorrecta
-						if (!verifyPw(args[1],newPw))
-							test = -11;
-						//tudo correcto
-						else{
-							break;
-						}
-					}
-				}
-				else{
-					if (!userMap.containsKey(args[1]))
-						userMap.put(args[1], new User (args[1],args[4]));
-					//pass incorrecta
-					else if (!verifyPw(args[1],args[4])){
-						while(true){
-							//-11 significa pass incorrecta
-							outStream.writeObject(-11);
-							newPw = (String)inStream.readObject();
-							if (verifyPw(args[1],newPw))
-								break;
-						}
-					}
-				}
-				//esta correcto, fez login com sucesso
-				//realiza a doOperations(args)
-				doOperations(args);
-
+				}	
+				outStream.writeObject(0);
 				
 				outStream.close();
 				inStream.close();
 
 				socket.close();
 
-			} catch (IOException | ClassNotFoundException e) {
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
-
-		private void doOperations(String[] args) {
-			
-		}
-
-		private boolean verifyPw(String user, String newPw) {
-			return newPw.equals(userMap.get(user).getPass());
 		}
 	}
 

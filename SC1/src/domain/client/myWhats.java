@@ -4,6 +4,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class myWhats {
@@ -18,16 +19,21 @@ public class myWhats {
 			System.err.println("Input insuficiente");
 			return;
 		}
-		if (args.length > 3)
+		else if (args.length > 3)
 			if (!flags.contains(args[3])){
 				System.err.println("Input incorrecto");
 				return;
 			}
 
 		int valid = validate(args);
-		if (valid != 1){
+		if (valid != 1 && valid != -10){
 			verifyOutput(valid);
 			return;
+		}
+		
+		String pwd = null;
+		if (valid == -10){
+			pwd = retryPwd();
 		}
 		
 		String userName = args[1];
@@ -47,15 +53,53 @@ public class myWhats {
 		ObjectInputStream in = new ObjectInputStream(soc.getInputStream());
 		ObjectOutputStream out = new ObjectOutputStream(soc.getOutputStream());
 
+		//Modelizacao do array de envio ao servidor!
+		String [] argsFinal;
+		if (!pwd.equals(null)){
+			argsFinal = new String [args.length-1];
+			argsFinal[0] = "-p";
+			argsFinal[1] = pwd;
+			int x = 3;
+			for (int i = 2; i < argsFinal.length; i++){
+				argsFinal[i] = args[x];
+				x++;
+			}
+		}
+		else{
+			argsFinal = new String [args.length-3];
+			int x = 3;
+			for (int i = 0; i < argsFinal.length; i++){
+				argsFinal[i] = args[x];
+				x++;
+			}
+		}
 
-		// Validate
-
-		out.writeObject(args);
-		int fromServer = (int) in.readObject();
+		//envia o numero de parametros
+		out.writeObject(argsFinal.length);
+		//envia o username
+		out.writeObject(args[1]);
 		
+		for (int i = 0; i < argsFinal.length; i++) {
+			out.writeObject(argsFinal[i]);
+		}
+		
+		int fromServer = (int) in.readObject();
+		if (fromServer < 0){
+			System.out.println("Oistras NO gambas!");
+		}
+		else
+			System.out.println("Oistras YES gambas!");
 		in.close();
 		out.close();
 		soc.close();
+	}
+	
+	private static String retryPwd(){
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Por favor insira a PASSWORD:");
+		String pwd = sc.nextLine();
+		sc.close();
+		return pwd;
 	}
 
 	private static void verifyOutput(int fromServer) {
