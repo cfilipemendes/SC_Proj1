@@ -88,12 +88,9 @@ public class myWhatsServer{
 							System.out.println("Nao fez a autenticacao, user:" + username + " : " + password);
 							outStream.writeObject(PW_ERROR);
 							password = (String) inStream.readObject();
-							if(password.toLowerCase().equals("q")){
-								closeThread();
-							}
 						}
 					}
-					
+					outStream.writeObject(1);
 					numArgs = (int) inStream.readObject();		
 					
 					

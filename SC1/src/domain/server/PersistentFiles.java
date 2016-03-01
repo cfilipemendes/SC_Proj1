@@ -15,7 +15,7 @@ public class PersistentFiles {
 	private File groups;
 
 	public PersistentFiles(String usersFile, String groupsFile) {
-		users = new File(usersFile);
+		users = new File(usersFile + ".txt");
 		if(!users.exists())
 			try {
 				users.createNewFile();
@@ -23,7 +23,7 @@ public class PersistentFiles {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		groups = new File(groupsFile);
+		groups = new File(groupsFile + ".txt");
 		if(!groups.exists())
 			try {
 				groups.createNewFile();
@@ -61,8 +61,9 @@ public class PersistentFiles {
 
 	public void addUser(String username, String password) {
 		try {
-			BufferedWriter bw = new BufferedWriter(new FileWriter(users));
-			bw.append(username + ":" + password + "\n");
+			BufferedWriter bw = new BufferedWriter(new FileWriter(users,true));
+			bw.append(username + ":" + password);
+			bw.newLine();
 			bw.flush();
 			bw.close();
 		} catch (IOException e) {

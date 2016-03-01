@@ -13,6 +13,7 @@ public class myWhats {
 	private static final String flags = "-p-m-f-r-a-d";
 	private static final Pattern PATTERN = Pattern.compile(
 			"^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
+	private final static int PW_ERROR = -66;
 
 	public static void main (String [] args) throws UnknownHostException, IOException, ClassNotFoundException{
 		if (args.length < 2){
@@ -44,34 +45,30 @@ public class myWhats {
 		}
 
 		String pwd = null;
-		if (valid == -10){
+		if (valid == -10)
 			pwd = retryPwd();
-			if (pwd.equals("q"))
-				return;
-		}
 
 		//Ligacao socket
-		//Socket soc = new Socket(ip, Integer.parseInt(port));
+		Socket soc = new Socket(ip, Integer.parseInt(port));
 
 		//Abertura das Streams
-		//ObjectInputStream in = new ObjectInputStream(soc.getInputStream());
-		//ObjectOutputStream out = new ObjectOutputStream(soc.getOutputStream());
+		ObjectInputStream in = new ObjectInputStream(soc.getInputStream());
+		ObjectOutputStream out = new ObjectOutputStream(soc.getOutputStream());
 
 		//Modelizacao do array de envio ao servidor!
 		String [] argsFinal;
 		if (pwd != null){
-			argsFinal = new String [args.length];
-			argsFinal[0] = "-p";
-			argsFinal[1] = pwd;
+			argsFinal = new String [args.length-2];
 			int x = 2;
-			for (int i = 2; i < argsFinal.length; i++){
+			for (int i = 0; i < argsFinal.length; i++){
 				argsFinal[i] = args[x];
 				x++;
 			}
 		}
 		else{
-			argsFinal = new String [args.length-2];
-			int x = 2;
+			argsFinal = new String [args.length-4];
+			pwd=args[3];
+			int x = 4;
 			for (int i = 0; i < argsFinal.length; i++){
 				argsFinal[i] = args[x];
 				x++;
@@ -83,28 +80,34 @@ public class myWhats {
 			System.out.print(argsFinal[i] + " + ");
 		}
 		System.out.println();
-		/*
-		//envia o numero de parametros
-		out.writeObject(argsFinal.length);
+		
+		
 		//envia o username
-		out.writeObject(args[1]);
-
+		out.writeObject(userName);
+		out.writeObject(pwd);
 		int fromServer = (int) in.readObject();
-		if (fromServer < 0){
-			System.out.println("Oistras NO gambas!");
+		while(fromServer == PW_ERROR){
+			System.out.print("Password ERRADA!");
+			pwd = retryPwd();
+			out.writeObject(pwd);
+			fromServer = (int) in.readObject();
 		}
-		else
-			System.out.println("Oistras YES gambas!");
 
+		out.writeObject(argsFinal.length);
+		
 		in.close();
 		out.close();
-		soc.close();*/
+		soc.close();
 	}
 
 	private static String retryPwd(){
 		Scanner sc = new Scanner(System.in);
-		System.out.println("Por favor insira a PASSWORD (ou 'Q' para sair):");
-		String pwd = sc.nextLine();
+		System.out.println("Por favor insira a PASSWORD:");
+		String pwd = null;
+		while (sc.hasNextLine()){
+			pwd = sc.nextLine();
+			break;
+		}
 		pwd = pwd.toLowerCase();
 		sc.close();
 		return pwd;
