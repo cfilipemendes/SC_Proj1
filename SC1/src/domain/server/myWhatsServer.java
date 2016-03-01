@@ -79,7 +79,7 @@ public class myWhatsServer{
 				}
 				
 				String newPw = "";
-				
+				int test = 0;
 				outStream.writeObject(test);
 				
 				//verifica que ha erro ou ha falta de pass
