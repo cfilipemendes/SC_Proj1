@@ -1,15 +1,18 @@
 package domain.server;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 public class server_skell {
 	
+	PersistentFiles files;
 	private HashMap <String,User> userMap;
 	private HashMap <String,Group> groupMap;
 	
-	public server_skell (){
+	public server_skell (String usersFile, String groupsFile){
 		userMap = new HashMap <> ();
 		groupMap = new HashMap <> ();
+		files = new PersistentFiles(usersFile,groupsFile);
 	}
 
 	public HashMap<String, User> getUserMap() {
@@ -20,53 +23,16 @@ public class server_skell {
 		return groupMap;
 	}
 	
-	public boolean authenticate (String pwd, String username){
-		return false;
+	public boolean authenticate (String pwd, String username) throws IOException{
+		return files.checkUserPwd(pwd,username);
 	}
 
-	
-	/*
-	//verifica que ha erro ou ha falta de pass
-	if (test != 1 || test != -10){
-		outStream.writeObject(test);
-		this.currentThread().interrupt();
-		return;
+	public String isUser(String username) throws IOException {
+		return files.hasUser(username);
 	}
-	//verifica se nao existe password
-	else if (test == -10){
-		while(true){	
-			outStream.writeObject(test);
-			newPw = (String)inStream.readObject();
-			//verifica se o hashmap nao contem o utilizador indicado
-			if (!userMap.containsKey(args[1])){
-				userMap.put(args[1], new User (args[1],newPw));
-				break;
-			}
-			//pass incorrecta
-			if (!verifyPw(args[1],newPw))
-				test = -11;
-			//tudo correcto
-			else{
-				break;
-			}
-		}
+
+	public void createUser(String username, String password) {
+		files.addUser(username,password);
+		
 	}
-	else{
-		if (!userMap.containsKey(args[1]))
-			userMap.put(args[1], new User (args[1],args[4]));
-		//pass incorrecta
-		else if (!verifyPw(args[1],args[4])){
-			while(true){
-				//-11 significa pass incorrecta
-				outStream.writeObject(-11);
-				newPw = (String)inStream.readObject();
-				if (verifyPw(args[1],newPw))
-					break;
-			}
-		}
-	}
-	
-	private boolean verifyPw(String user, String newPw) {
-			return newPw.equals(skell.getUserMap().get(user).getPass());
-		}*/
 }
