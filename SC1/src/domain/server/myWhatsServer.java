@@ -19,8 +19,9 @@ public class myWhatsServer{
 	private final String USERS_PWS_FILE = "usersAndPws";
 	private final String GROUPS_FILE = "usersAndPws";
 	private final int PW_ERROR = -66;
+	private final int ARGS_ERROR = -67;
 	private server_skell skell;
-	
+
 	public static void main(String[] args) {
 		System.out.println("servidor: main");
 		myWhatsServer server = new myWhatsServer();
@@ -36,7 +37,7 @@ public class myWhatsServer{
 			System.err.println(e.getMessage());
 			System.exit(-1);
 		}
-		
+
 		//cria um skell do servidor
 		skell = new server_skell(USERS_PWS_FILE,GROUPS_FILE);
 
@@ -75,8 +76,8 @@ public class myWhatsServer{
 				int numArgs;
 				String username,password;
 				try {
-					
-					
+
+
 					username = (String) inStream.readObject();
 					password = (String) inStream.readObject();
 					String pwAux;
@@ -90,22 +91,53 @@ public class myWhatsServer{
 							password = (String) inStream.readObject();
 						}
 					}
-					outStream.writeObject(1);
+					outStream.writeObject(1);//correu tudo bem com a autenticacao
 					numArgs = (int) inStream.readObject();		
-					
-					
-					String aux;
+
+
+					String [] arguments = new String [numArgs];
 					//recepcao de parametros do client
 					for(int i = 0; i < numArgs; i++){
-						aux = (String) inStream.readObject();
+						arguments [i]= (String) inStream.readObject();
 					}
-					
-					System.out.println("thread: depois de receber os args");
+
+					//Se a recepcao de parametros nao for fiavel
+					if (skell.validate (arguments) != 1){
+						outStream.writeObject(ARGS_ERROR);
+						closeThread();
+					}
+					else{
+						outStream.writeObject(1);//correu tudo bem com os argumentos recebidos
+						if (arguments.length != 0){
+							switch(arguments[0]){
+							case "-m":
+								skell.doMoperation(arguments[1],arguments[2]);
+								break;
+							case "-f":
+								skell.doFoperation(arguments[1],arguments[2]);
+								break;
+							case "-r":
+								if (numArgs == 1)
+									skell.doR0operation();
+								else if (numArgs == 2)
+									skell.doR1operation(arguments[1]);
+								else
+									skell.doR2operation(arguments[1],arguments[2]);
+								break;
+							case "-a":
+								skell.doAoperation(arguments[1],arguments[2]);
+								break;
+							case "-d":
+								skell.doDoperation(arguments[1],arguments[2]);
+								break;
+							}
+						}
+					}
+
 				}catch (ClassNotFoundException e1) {
 					e1.printStackTrace();
 				}	
-				outStream.writeObject(0);
-				
+
 				closeThread();
 
 			} catch (IOException e) {
@@ -123,8 +155,8 @@ public class myWhatsServer{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			
+
+
 		}
 	}
 

@@ -7,8 +7,8 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-public class myWhats {
-
+public class Corrupt {
+	
 	private static Scanner sc;
 	private static Socket soc;
 	private static ObjectInputStream in;
@@ -20,19 +20,6 @@ public class myWhats {
 	private final static int ARGS_ERROR = -67;
 
 	public static void main (String [] args) throws UnknownHostException, IOException, ClassNotFoundException{
-		
-		if (args.length < 2){
-			System.err.println("Input insuficiente");
-			return;
-		}
-		else if (args.length > 2)
-			if (!flags.contains(args[2])){
-				System.err.println("Input incorrecto");
-				return;
-			}
-
-		if (args.length > 7)
-			System.err.println("Input excede o esperado");
 
 		String userName = args[0];
 		String ip = args[1].split(":")[0];
@@ -43,7 +30,7 @@ public class myWhats {
 			return;
 		}
 
-		int valid = validate(args);
+		int valid = 1;
 		if (valid != 1 && valid != -10){
 			verifyOutput(valid);
 			return;
@@ -81,13 +68,20 @@ public class myWhats {
 				x++;
 			}
 		}
+
+		System.out.print("O argsFinal eh: ");
+		for (int i = 0; i < argsFinal.length; i++) {
+			System.out.print(argsFinal[i] + " + ");
+		}
+		System.out.println();
+		
 		
 		//envia o username
 		out.writeObject(userName);
 		out.writeObject(pwd);
 		int fromServer = (int) in.readObject();
 		while(fromServer == PW_ERROR){
-			System.err.print("Password ERRADA! ");
+			System.out.print("Password ERRADA! ");
 			pwd = retryPwd(sc);
 			out.writeObject(pwd);
 			fromServer = (int) in.readObject();
