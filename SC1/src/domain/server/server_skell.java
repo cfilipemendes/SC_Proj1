@@ -5,23 +5,11 @@ import java.util.HashMap;
 
 public class server_skell {
 
-	PersistentFiles files;
-	private HashMap <String,User> userMap;
-	private HashMap <String,Group> groupMap;
+	private static PersistentFiles files;
 	private static final String flags = "-p-m-f-r-a-d";
 
 	public server_skell (String usersFile, String groupsFile){
-		userMap = new HashMap <> ();
-		groupMap = new HashMap <> ();
 		files = new PersistentFiles(usersFile,groupsFile);
-	}
-
-	public HashMap<String, User> getUserMap() {
-		return userMap;
-	}
-
-	public HashMap<String, Group> getGroupMap() {
-		return groupMap;
 	}
 
 	public boolean authenticate (String pwd, String username) throws IOException{
@@ -34,7 +22,6 @@ public class server_skell {
 
 	public void createUser(String username, String password) {
 		files.addUser(username,password);
-
 	}
 
 	//-1 x == null
@@ -142,17 +129,18 @@ public class server_skell {
 	 * @param contact contacto do destinatario
 	 * @param mess conteudo da mensagem
 	 */
-	public void doMoperation(String contact, String mess) {
-		System.out.println("doMoperation com destinatario: " + contact + " e com mensagem " + mess);
+	public void doMoperation(String to, String mess, String from) {
+		System.out.println("doMoperation com destinatario: " + to + " e com mensagem " + mess);
+		files.newMessage(to, mess, from);
 	}
 
 	/**
-	 * vai buscar um ficheiro que foi enviado a um contacto
+	 * recebe um ficheiro que foi enviado a um contacto
 	 * @param contact contacto da pessoa que recebeu o ficheiro
 	 * @param fich nome do ficheiro
 	 */
 	public void doFoperation(String contact, String fich) {
-		System.out.println("doFoperation com contacto: " + contact + " e com ficheiro " + fich);	
+		System.out.println("doFoperation com contacto: " + contact + " e com ficheiro " + fich);
 	}
 
 	/**
@@ -184,8 +172,8 @@ public class server_skell {
 	 * @param user contacto do utilizador
 	 * @param group nome do grupo
 	 */
-	public void doAoperation(String user, String group) {
-		System.out.println("doAoperation com user: " + user + " e com grupo " + group);		
+	public void doAoperation(String user, String group, String from) {
+		System.out.println("doAoperation com user: " + user + " e com grupo " + group);
 	}
 
 	/**

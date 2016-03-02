@@ -8,13 +8,13 @@ public class Message {
 
 	private String from;
 	private String to;
-	private Object data;
+	private String mess;
 	private Date date;
 	
-	public Message(String from, String to, Object data){
+	public Message(String from, String to, String mess){
 		this.from = from;
 		this.to = to;
-		this.data = data;
+		this.mess = mess;
 		setTime();
 		
 	}
@@ -45,11 +45,4 @@ public class Message {
 		this.to = to;
 	}
 
-	public Object getData() {
-		return data;
-	}
-
-	public void setData(Object data) {
-		this.data = data;
-	}
 }

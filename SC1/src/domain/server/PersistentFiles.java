@@ -6,31 +6,32 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class PersistentFiles {
 
 	
 	private BufferedReader br;
 	private File users;
-	private File groups;
+	private String groups;
+	private Date data;
+	private SimpleDateFormat sdf;
 
-	public PersistentFiles(String usersFile, String groupsFile) {
+	public PersistentFiles(String usersFile, String groupsDir) {
 		users = new File(usersFile + ".txt");
+		sdf = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss");
+		groups = groupsDir;
 		if(!users.exists())
 			try {
 				users.createNewFile();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		groups = new File(groupsFile + ".txt");
-		if(!groups.exists())
-			try {
-				groups.createNewFile();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		File dir = new File(groupsDir);
+		if (!dir.exists())
+			dir.mkdir();
 	}
 
 	public boolean checkUserPwd(String pwd, String username) throws IOException {
@@ -66,13 +67,56 @@ public class PersistentFiles {
 			bw.newLine();
 			bw.flush();
 			bw.close();
+			File dir = new File(username);
+			if (!dir.exists())
+				dir.mkdir();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
+	public void newMessage(String to, String mess, String from) {
+		try {
+			data = GregorianCalendar.getInstance().getTime();
+			File message = new File (new File(".").getAbsolutePath() + "//" + from + "//" + from + "_" + to + "_" + sdf.format(data) + ".txt");
+			if (!message.exists())
+				message.createNewFile();
+			BufferedWriter bw = new BufferedWriter(new FileWriter(message));	
+			bw.write(mess);
+			bw.flush();
+			bw.close();
+			File messageTo = new File (new File(".").getAbsolutePath() + "//" + to + "//" + from + "_" + to + "_" + sdf.format(data) + ".txt");
+			if (!messageTo.exists())
+				messageTo.createNewFile();
+			bw = new BufferedWriter(new FileWriter(messageTo));	
+			bw.write(mess);
+			bw.flush();
+			bw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
+	public void createGroup (String groupname, String creator){
+		File group = new File (new File(".").getAbsolutePath() + groups + "//" + groupname + "//.txt");
+		if (!group.exists())
+			try {
+				group.createNewFile();
+				BufferedWriter bw = new BufferedWriter(new FileWriter(group));	
+				bw.write(creator);
+				bw.flush();
+				bw.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+	}
+	public boolean addUserToGroup (String groupname, String user){
+		return false;
+	}
+	public String hasGroup (){
+		return groups;
+		//TO-DO autp generated metoid , yes
+	}
 
 
 }

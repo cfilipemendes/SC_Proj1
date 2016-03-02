@@ -17,7 +17,7 @@ import java.net.Socket;
 public class myWhatsServer{
 
 	private final String USERS_PWS_FILE = "usersAndPws";
-	private final String GROUPS_FILE = "usersAndPws";
+	private final String GROUPS_DIR = "groups";
 	private final int PW_ERROR = -66;
 	private final int ARGS_ERROR = -67;
 	private server_skell skell;
@@ -39,7 +39,7 @@ public class myWhatsServer{
 		}
 
 		//cria um skell do servidor
-		skell = new server_skell(USERS_PWS_FILE,GROUPS_FILE);
+		skell = new server_skell(USERS_PWS_FILE,GROUPS_DIR);
 
 		while(true) {
 			try {
@@ -84,7 +84,8 @@ public class myWhatsServer{
 					//Primeiro verifica que se nao houver user ele eh criado
 					if((pwAux = skell.isUser(username)) == null){
 						skell.createUser(username,password);
-					}else{ // senao, como EXISTE USER faz autenticacao
+					}
+					else{ // senao, como EXISTE USER faz autenticacao
 						while(!pwAux.equals(password)){
 							System.out.println("Nao fez a autenticacao, user:" + username + " : " + password);
 							outStream.writeObject(PW_ERROR);
@@ -106,12 +107,17 @@ public class myWhatsServer{
 						outStream.writeObject(ARGS_ERROR);
 						closeThread();
 					}
+					
 					else{
+						int confirm = 1;
 						outStream.writeObject(1);//correu tudo bem com os argumentos recebidos
 						if (arguments.length != 0){
 							switch(arguments[0]){
 							case "-m":
-								skell.doMoperation(arguments[1],arguments[2]);
+								if (skell.isUser(arguments[1]) != null)
+									skell.doMoperation(arguments[1],arguments[2],username);
+								else
+									confirm = -1;
 								break;
 							case "-f":
 								skell.doFoperation(arguments[1],arguments[2]);
@@ -125,7 +131,7 @@ public class myWhatsServer{
 									skell.doR2operation(arguments[1],arguments[2]);
 								break;
 							case "-a":
-								skell.doAoperation(arguments[1],arguments[2]);
+								skell.doAoperation(arguments[1],arguments[2],username);
 								break;
 							case "-d":
 								skell.doDoperation(arguments[1],arguments[2]);
