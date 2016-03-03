@@ -3,6 +3,7 @@ package domain.server;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,7 +13,7 @@ import java.util.GregorianCalendar;
 
 public class PersistentFiles {
 
-	
+
 	private BufferedReader br;
 	private File users;
 	private String groups;
@@ -98,25 +99,96 @@ public class PersistentFiles {
 	}
 
 	public void createGroup (String groupname, String creator){
-		File group = new File (new File(".").getAbsolutePath() + groups + "//" + groupname + "//.txt");
-		if (!group.exists())
-			try {
+		File group = new File (new File(".").getAbsolutePath() + "//" + groups + "//" + groupname + ".txt");
+
+
+		try {
+			if (!group.exists()){
 				group.createNewFile();
 				BufferedWriter bw = new BufferedWriter(new FileWriter(group));	
 				bw.write(creator);
+				bw.newLine();
 				bw.flush();
 				bw.close();
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
-	public boolean addUserToGroup (String groupname, String user){
+
+	public void addUserToGroup (String groupname, String user){
+		File group = new File(new File(".").getAbsolutePath() + "//" + groups + "//" + groupname + ".txt");
+		BufferedWriter bw;
+		try {
+			bw = new BufferedWriter(new FileWriter(group,true));
+			bw.append(user);
+			bw.newLine();
+			bw.flush();
+			bw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void rmFromGroup(String groupname, String user){
+		File group = new File(new File(".").getAbsolutePath() + "//" + groups + "//" + groupname + ".txt");
+		File temp = new File(new File(".").getAbsolutePath() + "//" + groups + "//temp.txt");
+		BufferedWriter bw;
+		String line;
+		try {
+			br = new BufferedReader(new FileReader(group));
+			bw = new BufferedWriter(new FileWriter(temp,true));
+			while((line = br.readLine()) != null){
+				if(!line.equals(user)){
+					bw.append(line);
+					bw.newLine();
+					bw.flush();
+				}
+			}
+			bw.close();
+			br.close();
+			if(group.delete())
+				temp.renameTo(group);
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public boolean hasUserInGroup(String groupname, String user){
+		File group = new File(new File(".").getAbsolutePath() + "//" + groups + "//" + groupname + ".txt");
+		String line = null;
+		try {
+			br = new BufferedReader(new FileReader(group));
+			while((line = br.readLine()) != null){
+				if(line.equals(user)){
+					br.close();
+					return true;
+				}
+			}
+			br.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 		return false;
 	}
-	public String hasGroup (){
-		return groups;
-		//TO-DO autp generated metoid , yes
+
+	public String hasGroup (String groupname) throws IOException{
+		File group = new File (new File(".").getAbsolutePath()+ "//" + groups + "//" + groupname + ".txt");
+		String readLine = null;
+		if(group.exists()){
+			br = new BufferedReader(new FileReader(group));
+			readLine = br.readLine();
+			br.close();
+			return readLine;
+		}
+		return null;
+
 	}
-
-
 }

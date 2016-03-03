@@ -131,18 +131,24 @@ public class myWhatsServer{
 									skell.doR2operation(arguments[1],arguments[2]);
 								break;
 							case "-a":
-								skell.doAoperation(arguments[1],arguments[2],username);
+								if (skell.isUser(arguments[1]) != null)
+									confirm = skell.doAoperation(arguments[1],arguments[2],username);
+								else
+									confirm = -1;
 								break;
 							case "-d":
-								skell.doDoperation(arguments[1],arguments[2]);
+								confirm = skell.doDoperation(arguments[1],arguments[2],username);
 								break;
 							}
+							System.out.println("Confirm = " + confirm);
+
 						}
 					}
 
 				}catch (ClassNotFoundException e1) {
 					e1.printStackTrace();
 				}	
+				
 
 				closeThread();
 
@@ -158,7 +164,6 @@ public class myWhatsServer{
 
 				socket.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 

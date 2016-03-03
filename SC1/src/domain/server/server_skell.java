@@ -1,7 +1,6 @@
 package domain.server;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 public class server_skell {
 
@@ -22,6 +21,15 @@ public class server_skell {
 
 	public void createUser(String username, String password) {
 		files.addUser(username,password);
+	}
+
+	public String isGroup(String groupname) throws IOException{
+		return files.hasGroup(groupname);
+	}
+
+	public boolean hasUserInGroup(String groupname, String user){
+		return files.hasUserInGroup(groupname, user);
+
 	}
 
 	//-1 x == null
@@ -166,23 +174,63 @@ public class server_skell {
 	public void doR2operation(String contact, String fich) {
 		System.out.println("doR2operation com contacto: " + contact + " e com ficheiro " + fich);
 	}
-	
+
 	/**
 	 * adiciona um user a um grupo
 	 * @param user contacto do utilizador
 	 * @param group nome do grupo
+	 * @throws IOException 
 	 */
-	public void doAoperation(String user, String group, String from) {
+	public int doAoperation(String user, String group, String from) throws IOException {
 		System.out.println("doAoperation com user: " + user + " e com grupo " + group);
+		String creator;
+		int confirm = 1;
+		if((creator = files.hasGroup(group)) != null){
+			if(creator.equals(from)){
+				if (!files.hasUserInGroup(group,user)){
+					files.addUserToGroup(group,user);
+				}
+				else
+					confirm = -6;
+
+			}
+			else
+				confirm = -8;
+
+		}
+		else{
+			files.createGroup(group,from);
+			files.addUserToGroup(group,user);
+		}
+
+		return confirm;
 	}
 
 	/**
 	 * remove um utilizador de um grupo
 	 * @param user contacto do utilizador
 	 * @param group nome do grupo
+	 * @return 
+	 * @throws IOException 
 	 */
-	public void doDoperation(String user, String group) {
-		System.out.println("doDoperation com user: " + user + " e com grupo " + group);		
+	public int doDoperation(String user, String group, String from) throws IOException {
+		System.out.println("doDoperation com user: " + user + " e com grupo " + group);
+		String creator;
+		int confirm = 1;
+		if((creator = files.hasGroup(group)) != null){
+			if(creator.equals(from)){
+				if(files.hasUserInGroup(group,user)){
+					files.rmFromGroup(group,user);
+				}
+				else
+					confirm = -7;
+			}
+			else
+				confirm = -8;
+		}
+		else
+			confirm = -9;
+		return confirm;
 	}
 }
 
