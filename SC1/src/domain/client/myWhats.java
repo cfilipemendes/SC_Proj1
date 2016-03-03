@@ -18,6 +18,7 @@ public class myWhats {
 			"^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
 	private final static int PW_ERROR = -66;
 	private final static int ARGS_ERROR = -67;
+	private final static int REG_ERROR = -68;
 
 	public static void main (String [] args) throws UnknownHostException, IOException, ClassNotFoundException{
 		
@@ -92,6 +93,11 @@ public class myWhats {
 			out.writeObject(pwd);
 			fromServer = (int) in.readObject();
 		}
+		if (fromServer == REG_ERROR){
+			System.err.println("Nome ja existente!");
+			closeCon();
+			return;
+		}
 
 		//envia o numero de argumentos
 		out.writeObject(argsFinal.length);
@@ -104,6 +110,11 @@ public class myWhats {
 		fromServer = (int) in.readObject();
 		if (fromServer == ARGS_ERROR){
 			System.err.println("O servidor recebeu dados CORROMPIDOS!");
+			closeCon();
+			return;
+		}
+		else if (fromServer == REG_ERROR){
+			System.err.println("Nome ja existente!");
 			closeCon();
 			return;
 		}

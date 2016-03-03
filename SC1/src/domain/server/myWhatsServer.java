@@ -20,6 +20,7 @@ public class myWhatsServer{
 	private final String GROUPS_DIR = "groups";
 	private final int PW_ERROR = -66;
 	private final int ARGS_ERROR = -67;
+	private final int REG_ERROR = -68;
 	private server_skell skell;
 
 	public static void main(String[] args) {
@@ -83,7 +84,14 @@ public class myWhatsServer{
 					String pwAux;
 					//Primeiro verifica que se nao houver user ele eh criado
 					if((pwAux = skell.isUser(username)) == null){
-						skell.createUser(username,password);
+						if (skell.isGroup(username) == null){
+							skell.createUser(username,password);
+						}
+						else{
+							outStream.writeObject(REG_ERROR);
+							closeThread();
+							return;
+						}
 					}
 					else{ // senao, como EXISTE USER faz autenticacao
 						while(!pwAux.equals(password)){
@@ -93,7 +101,8 @@ public class myWhatsServer{
 						}
 					}
 					outStream.writeObject(1);//correu tudo bem com a autenticacao
-					numArgs = (int) inStream.readObject();		
+					
+					numArgs = (int) inStream.readObject();
 
 
 					String [] arguments = new String [numArgs];
@@ -106,8 +115,9 @@ public class myWhatsServer{
 					if (skell.validate (arguments) != 1){
 						outStream.writeObject(ARGS_ERROR);
 						closeThread();
+						return;
 					}
-					
+
 					else{
 						int confirm = 1;
 						outStream.writeObject(1);//correu tudo bem com os argumentos recebidos
@@ -116,6 +126,8 @@ public class myWhatsServer{
 							case "-m":
 								if (skell.isUser(arguments[1]) != null)
 									skell.doMoperation(arguments[1],arguments[2],username);
+								else if (skell.isGroup(arguments[1]) != null)
+									skell.doMGroupOperation(arguments[1],arguments[2],username);
 								else
 									confirm = -1;
 								break;
@@ -131,8 +143,13 @@ public class myWhatsServer{
 									skell.doR2operation(arguments[1],arguments[2]);
 								break;
 							case "-a":
-								if (skell.isUser(arguments[1]) != null)
-									confirm = skell.doAoperation(arguments[1],arguments[2],username);
+								if (skell.isUser(arguments[1]) != null){
+									if (skell.isUser(arguments[2]) == null){
+										confirm = skell.doAoperation(arguments[1],arguments[2],username);
+									}
+									else
+										confirm = REG_ERROR;
+								}
 								else
 									confirm = -1;
 								break;
@@ -148,7 +165,7 @@ public class myWhatsServer{
 				}catch (ClassNotFoundException e1) {
 					e1.printStackTrace();
 				}	
-				
+
 
 				closeThread();
 

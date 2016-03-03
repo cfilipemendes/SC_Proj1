@@ -141,6 +141,11 @@ public class server_skell {
 		System.out.println("doMoperation com destinatario: " + to + " e com mensagem " + mess);
 		files.newMessage(to, mess, from);
 	}
+	
+	public void doMGroupOperation(String groupname, String mess, String from) {
+		System.out.println("doMGroupOperation com grupo: " + groupname + " e com mensagem " + mess);
+		files.newGroupMessage(groupname, mess, from);
+	}
 
 	/**
 	 * recebe um ficheiro que foi enviado a um contacto
@@ -232,6 +237,7 @@ public class server_skell {
 			confirm = -9;
 		return confirm;
 	}
+
 }
 
 

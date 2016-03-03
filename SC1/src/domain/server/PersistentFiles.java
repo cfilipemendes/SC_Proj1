@@ -97,6 +97,28 @@ public class PersistentFiles {
 			e.printStackTrace();
 		}
 	}
+	/*
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * EIA CARALHO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	 *                   v v v v v v v v v v v v v v v v v v 
+	 * 				| |
+	 * 				| |
+	 * 				| |
+	 * 			__________
+	 * 			\		 /
+	 * 			 \		/        ASS: Patchonero && Banbinni
+	 * 			  \	   /
+	 * 			   \  /
+	 * 				\/
+	 * 
+	 */
+	public void newGroupMessage(String groupname, String mess, String from) {
+		
+	}
 
 	public void createGroup (String groupname, String creator){
 		File group = new File (new File(".").getAbsolutePath() + "//" + groups + "//" + groupname + ".txt");
@@ -130,32 +152,48 @@ public class PersistentFiles {
 		}
 	}
 
-	public void rmFromGroup(String groupname, String user){
+	public boolean aloneInGroup (String groupname, String user){
 		File group = new File(new File(".").getAbsolutePath() + "//" + groups + "//" + groupname + ".txt");
-		File temp = new File(new File(".").getAbsolutePath() + "//" + groups + "//temp.txt");
-		BufferedWriter bw;
-		String line;
 		try {
 			br = new BufferedReader(new FileReader(group));
-			bw = new BufferedWriter(new FileWriter(temp,true));
-			while((line = br.readLine()) != null){
-				if(!line.equals(user)){
-					bw.append(line);
-					bw.newLine();
-					bw.flush();
-				}
-			}
-			bw.close();
-			br.close();
-			if(group.delete())
-				temp.renameTo(group);
-			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
+		if (br.lines().toArray().length == 2){
+			return true;
+		}
+		return false;
+	}
 
+	public void rmFromGroup(String groupname, String user){
+		File group = new File(new File(".").getAbsolutePath() + "//" + groups + "//" + groupname + ".txt");
+		if (aloneInGroup (groupname, user))
+			group.delete();
+		else{
+			File temp = new File(new File(".").getAbsolutePath() + "//" + groups + "//temp.txt");
+			BufferedWriter bw;
+			String line;
+			try {
+				br = new BufferedReader(new FileReader(group));
+				bw = new BufferedWriter(new FileWriter(temp,true));
+				while((line = br.readLine()) != null){
+					if(!line.equals(user)){
+						bw.append(line);
+						bw.newLine();
+						bw.flush();
+					}
+				}
+				bw.close();
+				br.close();
+				if(group.delete())
+					temp.renameTo(group);
+
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public boolean hasUserInGroup(String groupname, String user){
@@ -191,4 +229,5 @@ public class PersistentFiles {
 		return null;
 
 	}
+
 }
