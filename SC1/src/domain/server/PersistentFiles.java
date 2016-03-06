@@ -117,6 +117,21 @@ public class PersistentFiles {
 	 * 
 	 */
 	public void newGroupMessage(String groupname, String mess, String from) {
+		File group = new File(new File(".").getAbsolutePath() + "//" + groups + "//" + groupname + ".txt");
+		String line;
+		try {
+			br = new BufferedReader(new FileReader(group));
+			while((line = br.readLine()) != null){
+				if(!line.equals(from))
+					newMessage(line, mess, from);
+			}
+			br.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		
 	}
 
