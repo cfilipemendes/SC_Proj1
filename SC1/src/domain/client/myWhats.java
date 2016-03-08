@@ -119,6 +119,15 @@ public class myWhats {
 			return;
 		}
 	
+		//Continuar aqui!!!!!!!
+		//
+		//
+		//
+		//
+		if (argsFinal [0].equals("-f")){
+			
+		}
+		
 		closeCon();
 	}
 	
