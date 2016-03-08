@@ -97,25 +97,7 @@ public class PersistentFiles {
 			e.printStackTrace();
 		}
 	}
-	/*
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * EIA CARALHO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	 *                   v v v v v v v v v v v v v v v v v v 
-	 * 				| |
-	 * 				| |
-	 * 				| |
-	 * 			__________
-	 * 			\		 /
-	 * 			 \		/        ASS: Patchonero && Banbinni
-	 * 			  \	   /
-	 * 			   \  /
-	 * 				\/
-	 * 
-	 */
+
 	public void newGroupMessage(String groupname, String mess, String from) {
 		File group = new File(new File(".").getAbsolutePath() + "//" + groups + "//" + groupname + ".txt");
 		String line;
