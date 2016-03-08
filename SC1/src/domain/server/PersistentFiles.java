@@ -167,22 +167,23 @@ public class PersistentFiles {
 		}
 	}
 
-	public boolean aloneInGroup (String groupname, String user){
+	public String creatorOfGroup (String groupname){
 		File group = new File(new File(".").getAbsolutePath() + "//" + groups + "//" + groupname + ".txt");
+		String creator = null;
 		try {
 			br = new BufferedReader(new FileReader(group));
+			creator = br.readLine();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		if (br.lines().toArray().length == 2){
-			return true;
-		}
-		return false;
+		return creator;
 	}
 
 	public void rmFromGroup(String groupname, String user){
 		File group = new File(new File(".").getAbsolutePath() + "//" + groups + "//" + groupname + ".txt");
-		if (aloneInGroup (groupname, user))
+		if (creatorOfGroup (groupname).equals(user))
 			group.delete();
 		else{
 			File temp = new File(new File(".").getAbsolutePath() + "//" + groups + "//temp.txt");
