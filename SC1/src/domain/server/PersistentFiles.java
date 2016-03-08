@@ -16,21 +16,26 @@ public class PersistentFiles {
 
 	private BufferedReader br;
 	private File users;
-	private String groups;
+	private String groupsDir;
+	private String usersDir;
 	private Date data;
 	private SimpleDateFormat sdf;
 
-	public PersistentFiles(String usersFile, String groupsDir) {
+	public PersistentFiles(String usersFile, String groupsDir, String usersDir) {
 		users = new File(usersFile + ".txt");
 		sdf = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss");
-		groups = groupsDir;
+		this.groupsDir = groupsDir;
+		this.usersDir = usersDir;
 		if(!users.exists())
 			try {
 				users.createNewFile();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		File dir = new File(groupsDir);
+		File dir = new File(usersDir);
+		if (!dir.exists())
+			dir.mkdir();
+		dir = new File(groupsDir);
 		if (!dir.exists())
 			dir.mkdir();
 	}
@@ -68,7 +73,7 @@ public class PersistentFiles {
 			bw.newLine();
 			bw.flush();
 			bw.close();
-			File dir = new File(username);
+			File dir = new File (new File(".").getAbsolutePath() + "//" + usersDir + "//" + username);
 			if (!dir.exists())
 				dir.mkdir();
 		} catch (IOException e) {
@@ -77,18 +82,23 @@ public class PersistentFiles {
 	}
 
 	public void newMessage(String to, String mess, String from) {
+		File dir = new File (new File(".").getAbsolutePath() + "//" + usersDir + "//" + from + "//" + to);
+		if (!dir.exists())
+			dir.mkdir();
 		try {
 			data = GregorianCalendar.getInstance().getTime();
-			File message = new File (new File(".").getAbsolutePath() + "//" + from + "//" + from + "_" + to + "_" + sdf.format(data) + ".txt");
-			if (!message.exists())
-				message.createNewFile();
+			File message = new File (new File(".").getAbsolutePath() + "//" + usersDir + "//" + from + "//" + to + "//" + from + "_" + to + "_" + sdf.format(data) + ".txt");
+			message.createNewFile();
 			BufferedWriter bw = new BufferedWriter(new FileWriter(message));	
 			bw.write(mess);
 			bw.flush();
 			bw.close();
-			File messageTo = new File (new File(".").getAbsolutePath() + "//" + to + "//" + from + "_" + to + "_" + sdf.format(data) + ".txt");
-			if (!messageTo.exists())
-				messageTo.createNewFile();
+			
+			dir = new File (new File(".").getAbsolutePath() + "//" + usersDir + "//" + to + "//" + from);
+			if (!dir.exists())
+				dir.mkdir();
+			File messageTo = new File (new File(".").getAbsolutePath() + "//" + usersDir + "//" + to + "//" + from + "//" + from + "_" + to + "_" + sdf.format(data) + ".txt");
+			messageTo.createNewFile();
 			bw = new BufferedWriter(new FileWriter(messageTo));	
 			bw.write(mess);
 			bw.flush();
@@ -99,26 +109,28 @@ public class PersistentFiles {
 	}
 
 	public void newGroupMessage(String groupname, String mess, String from) {
-		File group = new File(new File(".").getAbsolutePath() + "//" + groups + "//" + groupname + ".txt");
-		String line;
 		try {
-			br = new BufferedReader(new FileReader(group));
-			while((line = br.readLine()) != null){
-				if(!line.equals(from))
-					newMessage(line, mess, from);
-			}
-			br.close();
+			data = GregorianCalendar.getInstance().getTime();
+			File message = new File (new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname + "//" + from + "_" + groupname + "_" + sdf.format(data) + ".txt");
+			message.createNewFile();
+			BufferedWriter bw = new BufferedWriter(new FileWriter(message));	
+			bw.write(mess);
+			bw.flush();
+			bw.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		
+
+
 	}
 
 	public void createGroup (String groupname, String creator){
-		File group = new File (new File(".").getAbsolutePath() + "//" + groups + "//" + groupname + ".txt");
+		File dir = new File (new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname);
+		if (!dir.exists())
+			dir.mkdir();
+		File group = new File (new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname + "//" + groupname + ".txt");
 
 
 		try {
@@ -136,7 +148,7 @@ public class PersistentFiles {
 	}
 
 	public void addUserToGroup (String groupname, String user){
-		File group = new File(new File(".").getAbsolutePath() + "//" + groups + "//" + groupname + ".txt");
+		File group = new File(new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname + "//" + groupname + ".txt");
 		BufferedWriter bw;
 		try {
 			bw = new BufferedWriter(new FileWriter(group,true));
@@ -150,7 +162,7 @@ public class PersistentFiles {
 	}
 
 	public String creatorOfGroup (String groupname){
-		File group = new File(new File(".").getAbsolutePath() + "//" + groups + "//" + groupname + ".txt");
+		File group = new File(new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname + "//" + groupname + ".txt");
 		String creator = null;
 		try {
 			br = new BufferedReader(new FileReader(group));
@@ -164,11 +176,14 @@ public class PersistentFiles {
 	}
 
 	public void rmFromGroup(String groupname, String user){
-		File group = new File(new File(".").getAbsolutePath() + "//" + groups + "//" + groupname + ".txt");
-		if (creatorOfGroup (groupname).equals(user))
-			group.delete();
+		File group = new File(new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname + "//" + groupname + ".txt");
+		if (creatorOfGroup (groupname).equals(user)){
+			File groupDir = new File(new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname);
+			cleanDir(groupDir);
+			groupDir.delete();
+		}
 		else{
-			File temp = new File(new File(".").getAbsolutePath() + "//" + groups + "//temp.txt");
+			File temp = new File(new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname + "//temp.txt");
 			BufferedWriter bw;
 			String line;
 			try {
@@ -193,9 +208,15 @@ public class PersistentFiles {
 			}
 		}
 	}
+	
+	public void cleanDir (File dir) {
+		for(File f : dir.listFiles()){
+			f.delete();
+		}
+	}
 
 	public boolean hasUserInGroup(String groupname, String user){
-		File group = new File(new File(".").getAbsolutePath() + "//" + groups + "//" + groupname + ".txt");
+		File group = new File(new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname + "//" + groupname + ".txt");
 		String line = null;
 		try {
 			br = new BufferedReader(new FileReader(group));
@@ -216,7 +237,7 @@ public class PersistentFiles {
 	}
 
 	public String hasGroup (String groupname) throws IOException{
-		File group = new File (new File(".").getAbsolutePath()+ "//" + groups + "//" + groupname + ".txt");
+		File group = new File (new File(".").getAbsolutePath()+ "//" + groupsDir + "//" + groupname + "//" + groupname + ".txt");
 		String readLine = null;
 		if(group.exists()){
 			br = new BufferedReader(new FileReader(group));

@@ -18,6 +18,7 @@ public class myWhatsServer{
 
 	private final String USERS_PWS_FILE = "usersAndPws";
 	private final String GROUPS_DIR = "groups";
+	private final String USERS_DIR = "users";
 	private final int PW_ERROR = -66;
 	private final int ARGS_ERROR = -67;
 	private final int REG_ERROR = -68;
@@ -40,7 +41,7 @@ public class myWhatsServer{
 		}
 
 		//cria um skell do servidor
-		skell = new server_skell(USERS_PWS_FILE,GROUPS_DIR);
+		skell = new server_skell(USERS_PWS_FILE,GROUPS_DIR, USERS_DIR);
 
 		while(true) {
 			try {

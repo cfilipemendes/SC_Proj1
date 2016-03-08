@@ -7,8 +7,8 @@ public class server_skell {
 	private static PersistentFiles files;
 	private static final String flags = "-p-m-f-r-a-d";
 
-	public server_skell (String usersFile, String groupsFile){
-		files = new PersistentFiles(usersFile,groupsFile);
+	public server_skell (String usersFile, String groupsDir, String usersDir){
+		files = new PersistentFiles(usersFile,groupsDir,usersDir);
 	}
 
 	public boolean authenticate (String pwd, String username) throws IOException{
@@ -188,8 +188,10 @@ public class server_skell {
 	 */
 	public int doAoperation(String user, String group, String from) throws IOException {
 		System.out.println("doAoperation com user: " + user + " e com grupo " + group);
-		String creator;
 		int confirm = 1;
+		if (from.equals(user))
+			return -5;
+		String creator;
 		if((creator = files.hasGroup(group)) != null){
 			if(creator.equals(from)){
 				if (!files.hasUserInGroup(group,user)){
