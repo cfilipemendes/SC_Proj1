@@ -1,12 +1,15 @@
 package domain.server;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -14,6 +17,7 @@ import java.util.GregorianCalendar;
 public class PersistentFiles {
 
 
+	private static final int PACKET_SIZE = 1024;
 	private BufferedReader br;
 	private File users;
 	private String groupsDir;
@@ -93,7 +97,7 @@ public class PersistentFiles {
 			bw.write(mess);
 			bw.flush();
 			bw.close();
-			
+
 			dir = new File (new File(".").getAbsolutePath() + "//" + usersDir + "//" + to + "//" + from);
 			if (!dir.exists())
 				dir.mkdir();
@@ -208,7 +212,7 @@ public class PersistentFiles {
 			}
 		}
 	}
-	
+
 	public void cleanDir (File dir) {
 		for(File f : dir.listFiles()){
 			f.delete();
@@ -249,4 +253,88 @@ public class PersistentFiles {
 
 	}
 
+	public void saveFile(String contact, String fich, String username, int fileSize, ObjectInputStream inStream) {
+		try {
+			byte [] byteArray = new byte [fileSize];
+			FileOutputStream fosFrom = new FileOutputStream(new File(".").getAbsolutePath() + 
+					"//" + usersDir + "//"+ username + "//" + contact + "//" + username + "_" + contact + "_" + fich);
+			BufferedOutputStream bosFrom = new BufferedOutputStream(fosFrom);
+			FileOutputStream fosTo = new FileOutputStream(new File(".").getAbsolutePath() + 
+					"//" + usersDir + "//" + contact + "//" + username + "//" + username + "_" + contact + "_" + fich);
+			BufferedOutputStream bosTo = new BufferedOutputStream(fosTo);
+
+			int current = 0;
+			int bytesRead;
+			int nCiclo = fileSize/PACKET_SIZE;
+			int resto = fileSize%PACKET_SIZE;
+
+			for (int i = 0; i < nCiclo; i++){
+				bytesRead = inStream.read(byteArray, current,PACKET_SIZE);
+				bosFrom.write(byteArray,current,bytesRead);
+				bosFrom.flush();
+				bosTo.write(byteArray,current,bytesRead);
+				bosTo.flush();
+				if (bytesRead > 0)
+					current += bytesRead;
+			}
+
+			if (resto > 0){
+				bytesRead = inStream.read(byteArray, current,resto);
+				bosFrom.write(byteArray,current,bytesRead);
+				bosFrom.flush();
+				bosTo.write(byteArray,current,bytesRead);
+				bosTo.flush();
+			}
+			bosFrom.close();
+			bosTo.close();
+			fosFrom.close();
+			fosTo.close();
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public void saveFileGroup(String contact, String fich, String username, int fileSize, ObjectInputStream inStream) {
+		try {
+			byte [] byteArray = new byte [fileSize];
+			FileOutputStream fos = new FileOutputStream(new File(".").getAbsolutePath() + 
+					"//" + groupsDir + "//"+ contact + "//" + username + "_" + contact + "_" + fich);
+			BufferedOutputStream bos = new BufferedOutputStream(fos);
+
+			int current = 0;
+			int bytesRead;
+			int nCiclo = fileSize/PACKET_SIZE;
+			int resto = fileSize%PACKET_SIZE;
+
+			for (int i = 0; i < nCiclo; i++){
+				bytesRead = inStream.read(byteArray, current,PACKET_SIZE);
+				bos.write(byteArray,current,bytesRead);
+				bos.flush();
+				if (bytesRead > 0)
+					current += bytesRead;
+			}
+
+			if (resto > 0){
+				bytesRead = inStream.read(byteArray, current,resto);
+				bos.write(byteArray,current,bytesRead);
+				bos.flush();
+			}
+			bos.close();
+			bos.close();
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 }
+
+
+
+

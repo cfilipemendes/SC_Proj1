@@ -1,6 +1,7 @@
 package domain.server;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 
 public class server_skell {
 
@@ -151,8 +152,15 @@ public class server_skell {
 	 * recebe um ficheiro que foi enviado a um contacto
 	 * @param contact contacto da pessoa que recebeu o ficheiro
 	 * @param fich nome do ficheiro
+	 * @param username 
 	 */
-	public void doFoperation(String contact, String fich) {
+	public void doFoperation(String contact, String fich, String username, int fileSize,ObjectInputStream inStream) {
+		files.saveFile(contact,fich,username,fileSize,inStream);
+		System.out.println("doFoperation com contacto: " + contact + " e com ficheiro " + fich);
+	}
+	
+	public void doFoperationGroup(String contact, String fich, String username, int fileSize,ObjectInputStream inStream) {	
+		files.saveFileGroup(contact,fich,username,fileSize,inStream);
 		System.out.println("doFoperation com contacto: " + contact + " e com ficheiro " + fich);
 	}
 

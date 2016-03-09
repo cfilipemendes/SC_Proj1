@@ -102,7 +102,7 @@ public class myWhatsServer{
 						}
 					}
 					outStream.writeObject(1);//correu tudo bem com a autenticacao
-					
+
 					numArgs = (int) inStream.readObject();
 
 
@@ -133,7 +133,13 @@ public class myWhatsServer{
 									confirm = -1;
 								break;
 							case "-f":
-								skell.doFoperation(arguments[1],arguments[2]);
+								int fileSize = (int) inStream.readObject();
+								if (skell.isUser(arguments[1]) != null)
+									skell.doFoperation(arguments[1],arguments[2],username,fileSize,inStream);
+								else if (skell.isGroup(arguments[1]) != null)
+									skell.doFoperationGroup(arguments[1],arguments[2],username,fileSize,inStream);
+								else
+									confirm = -1;
 								break;
 							case "-r":
 								if (numArgs == 1)

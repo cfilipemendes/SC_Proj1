@@ -1,4 +1,7 @@
 package domain.client;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -19,6 +22,7 @@ public class myWhats {
 	private final static int PW_ERROR = -66;
 	private final static int ARGS_ERROR = -67;
 	private final static int REG_ERROR = -68;
+	private final static int PACKET_SIZE = 1024;
 
 	public static void main (String [] args) throws UnknownHostException, IOException, ClassNotFoundException{
 		
@@ -125,7 +129,35 @@ public class myWhats {
 		//
 		//
 		if (argsFinal [0].equals("-f")){
+			File myFile = new File (argsFinal [2]);
+			int fileSize = (int) myFile.length();
+			byte [] byteArray = new byte [fileSize];
+			FileInputStream fis = new FileInputStream (myFile);
+			BufferedInputStream bis = new BufferedInputStream (fis);
+			int bytesRead;
+			int current = 0; 
 			
+			out.writeObject(fileSize);
+			
+			int nCiclo = fileSize/PACKET_SIZE;
+			int resto = fileSize%PACKET_SIZE;
+			
+			for (int i = 0; i < nCiclo; i++){
+				bytesRead = bis.read(byteArray,current,PACKET_SIZE);
+				out.write(byteArray,current,bytesRead);
+				out.flush();
+				if (bytesRead > 0)
+					current += bytesRead;
+			}
+			if (resto > 0){
+				bytesRead = bis.read(byteArray,current,resto);
+				out.write(byteArray,current,bytesRead);
+				out.flush();
+			}
+			
+			bis.close();
+			fis.close();
+				
 		}
 		
 		closeCon();
