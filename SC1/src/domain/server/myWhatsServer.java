@@ -76,6 +76,7 @@ public class myWhatsServer{
 				outStream = new ObjectOutputStream(socket.getOutputStream());
 				inStream = new ObjectInputStream(socket.getInputStream());
 				int numArgs;
+				int confirm;
 				String username,password;
 				try {
 
@@ -120,7 +121,7 @@ public class myWhatsServer{
 					}
 
 					else{
-						int confirm = 1;
+						confirm = 1;
 						outStream.writeObject(1);//correu tudo bem com os argumentos recebidos
 						if (arguments.length != 0){
 							switch(arguments[0]){
@@ -142,14 +143,28 @@ public class myWhatsServer{
 									confirm = -1;
 								break;
 							case "-r":
-								if (numArgs == 1)
-									skell.doR0operation();
+								if (numArgs == 1){
+									skell.doR0operation(username,outStream);
+								}
 								else if (skell.isUser(arguments[1]) != null) {
 									outStream.writeObject(1);
 									if (numArgs == 2)
-										confirm = skell.doR1operation(username,arguments[1],outStream);
+										confirm = skell.doR1operation(username,arguments[1],outStream,true);
 									else
-										confirm = skell.doR2operation(username,arguments[1],arguments[2],outStream);
+										confirm = skell.doR2operation(username,arguments[1],arguments[2],outStream,true);
+								}
+								else if (skell.isGroup(arguments[1]) != null) {
+									if (skell.hasUserInGroup(arguments[1], username)) {
+										outStream.writeObject(1);
+										if (numArgs == 2)
+											confirm = skell.doR1operation(username,arguments[1],outStream,false);
+										else
+											confirm = skell.doR2operation(username,arguments[1],arguments[2],outStream,false);
+									}
+									else{
+										outStream.writeObject(-7);
+										return;
+									}
 								}
 								else{
 									outStream.writeObject(-1);
@@ -171,10 +186,10 @@ public class myWhatsServer{
 								confirm = skell.doDoperation(arguments[1],arguments[2],username);
 								break;
 							}
-							System.out.println("Confirm = " + confirm);
-							outStream.writeObject(confirm);
 						}
 					}
+					System.out.println("Confirm = " + confirm);
+					outStream.writeObject(confirm);
 
 				}catch (ClassNotFoundException e1) {
 					e1.printStackTrace();

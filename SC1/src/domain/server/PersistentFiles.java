@@ -341,16 +341,28 @@ public class PersistentFiles {
 		}
 	}
 
-	public File hasFile (String from,String contact, String fich) {
+	public File userHasFile (String from,String contact, String fich) {
 		File myDir = new File (new File(".").getAbsolutePath() + "//" + usersDir + "//" + contact + "//" + from);
 		for (File f : myDir.listFiles())
 			if (f.toString().contains(fich))
 				return f;
 		return null;
 	}
+	public File groupHasFile (String from,String group, String fich) {
+		File myDir = new File (new File(".").getAbsolutePath() + "//" + groupsDir + "//" + group);
+		for (File f : myDir.listFiles())
+			if (f.toString().contains(fich))
+				return f;
+		return null;
+	}
 
-	public int getFile(String from,String contact, String fich, ObjectOutputStream outStream) {
-		File myFile = hasFile(from,contact,fich);
+	public int getFile(String from,String contact, String fich, ObjectOutputStream outStream,boolean user) {
+		File myFile;
+		if (user)
+			myFile = userHasFile(from,contact,fich);
+		else
+			myFile = groupHasFile(from,contact,fich);
+
 		if (myFile == null)
 			return -10;
 		int fileSize = (int) myFile.length();
@@ -391,9 +403,13 @@ public class PersistentFiles {
 	}
 
 	@SuppressWarnings("unchecked")
-	public int getContactConv(String username, String contact, ObjectOutputStream outStream) {
+	public int getContactConv(String username, String contact, ObjectOutputStream outStream, boolean user) {
 		try {
-			File myDir = new File (new File(".").getAbsolutePath() + "//" + usersDir + "//" + contact + "//" + username);
+			File myDir;
+			if (user)
+				myDir = new File (new File(".").getAbsolutePath() + "//" + usersDir + "//" + contact + "//" + username);
+			else
+				myDir = new File (new File(".").getAbsolutePath() + "//" + groupsDir + "//" + contact);
 			int nFiles = myDir.list().length;
 			outStream.writeObject(nFiles);
 			String [] fileName;
@@ -418,6 +434,8 @@ public class PersistentFiles {
 						finalF [1] = fileName[1];
 						finalF [2] = (fileName[2] + "_" + fileName[3]);
 						finalF [3] = readFile(f);
+						outStream.writeObject(finalF);
+						outStream.flush();
 					}
 					//se o ficheiro for file
 					else if (fileName.length == 5){
@@ -425,9 +443,13 @@ public class PersistentFiles {
 						finalF [1] = fileName[1];
 						finalF [2] = (fileName[2] + "_" + fileName[3]);
 						finalF [3] = fileName[4];
+						outStream.writeObject(finalF);
+						outStream.flush();
 					}
-					outStream.writeObject(finalF);
-					outStream.flush();
+					else{
+						outStream.writeObject(null);
+						outStream.flush();
+					}
 				}
 				else{
 					outStream.writeObject(null);
@@ -456,6 +478,10 @@ public class PersistentFiles {
 			e.printStackTrace();
 		}
 		return sb.toString();
+	}
+
+	public void getLatestConvs(String username, ObjectOutputStream outStream) {
+		
 	}
 
 }

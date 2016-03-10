@@ -166,10 +166,13 @@ public class server_skell {
 	}
 
 	/**
-	 * vai buscar tudo o que foi enviado e recebido para todos os contactos
+	 * vai buscar a ultima coisa que foi enviada ou recebida para cada contacto
+	 * @param username 
+	 * @param outStream 
 	 */
-	public void doR0operation() {
-		System.out.println("doR0operation");		
+	public void doR0operation(String username, ObjectOutputStream outStream) {
+		System.out.println("doR0operation");
+		files.getLatestConvs(username,outStream);
 	}
 
 	/**
@@ -178,9 +181,9 @@ public class server_skell {
 	 * @param outStream 
 	 * @param contact 
 	 */
-	public int doR1operation(String username, String contact, ObjectOutputStream outStream) {
+	public int doR1operation(String username, String contact, ObjectOutputStream outStream,boolean user) {
 		System.out.println("doR1operation com contacto: " + contact);
-		return files.getContactConv(username,contact,outStream);
+		return files.getContactConv(username,contact,outStream,user);
 	}
 
 	/**
@@ -189,9 +192,9 @@ public class server_skell {
 	 * @param fich
 	 * @return 
 	 */
-	public int doR2operation(String from,String contact, String fich,ObjectOutputStream outStream) {
+	public int doR2operation(String from,String contact, String fich,ObjectOutputStream outStream,boolean user) {
 		System.out.println("doR2operation com contacto: " + contact + " e com ficheiro " + fich);
-		return files.getFile(from,contact,fich,outStream);
+		return files.getFile(from,contact,fich,outStream,user);
 
 	}
 

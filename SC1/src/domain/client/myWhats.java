@@ -182,7 +182,7 @@ public class myWhats {
 				}
 				// -r que recebe tudo
 				else if(argsFinal.length == 1){
-
+					
 				}
 			}
 		}
