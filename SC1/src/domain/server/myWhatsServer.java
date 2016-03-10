@@ -147,7 +147,7 @@ public class myWhatsServer{
 								else if (numArgs == 2)
 									skell.doR1operation(arguments[1]);
 								else
-									skell.doR2operation(arguments[1],arguments[2]);
+									skell.doR2operation(username,arguments[1],arguments[2],outStream);
 								break;
 							case "-a":
 								if (skell.isUser(arguments[1]) != null){

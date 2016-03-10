@@ -1,15 +1,18 @@
 package domain.server;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -331,6 +334,47 @@ public class PersistentFiles {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void getFile(String from,String contact, String fich, ObjectOutputStream outStream) {
+		File myFile = new File (new File(".").getAbsolutePath() + 
+				"//" + usersDir + "//" + contact + "//" +  fich);
+		//File myFile = new File (new File(".").getAbsolutePath() + 
+			//	"//" + usersDir + "//" + contact + "//" + from + "_" + contact + "_" + fich);
+		int fileSize = (int) myFile.length();
+		byte [] byteArray = new byte [fileSize];
+		try {
+			outStream.writeObject(fileSize);
+			FileInputStream fis = new FileInputStream (myFile);
+			BufferedInputStream bis = new BufferedInputStream (fis);
+			int bytesRead;
+			int current = 0; 
+
+
+			int nCiclo = fileSize/PACKET_SIZE;
+			int resto = fileSize%PACKET_SIZE;
+
+			for (int i = 0; i < nCiclo; i++){
+				bytesRead = bis.read(byteArray,current,PACKET_SIZE);
+				outStream.write(byteArray,current,bytesRead);
+
+				outStream.flush();
+
+				if (bytesRead > 0)
+					current += bytesRead;
+			}
+			if (resto > 0){
+				bytesRead = bis.read(byteArray,current,resto);
+				outStream.write(byteArray,current,bytesRead);
+				outStream.flush();
+			}
+
+			bis.close();
+			fis.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 }

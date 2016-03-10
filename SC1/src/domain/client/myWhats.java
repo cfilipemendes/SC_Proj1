@@ -1,7 +1,10 @@
 package domain.client;
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -25,7 +28,7 @@ public class myWhats {
 	private final static int PACKET_SIZE = 1024;
 
 	public static void main (String [] args) throws UnknownHostException, IOException, ClassNotFoundException{
-		
+
 		if (args.length < 2){
 			System.err.println("Input insuficiente");
 			return;
@@ -53,7 +56,7 @@ public class myWhats {
 			verifyOutput(valid);
 			return;
 		}
-		
+
 		sc = new Scanner (System.in);
 
 		String pwd = null;
@@ -86,7 +89,7 @@ public class myWhats {
 				x++;
 			}
 		}
-		
+
 		//envia o username
 		out.writeObject(userName);
 		out.writeObject(pwd);
@@ -109,7 +112,7 @@ public class myWhats {
 		for (int i = 0; i < argsFinal.length; i++){
 			out.writeObject(argsFinal[i]);
 		}
-		
+
 		//verifica se os dados foram bem recebidos pelo servidor
 		fromServer = (int) in.readObject();
 		if (fromServer == ARGS_ERROR){
@@ -122,47 +125,94 @@ public class myWhats {
 			closeCon();
 			return;
 		}
-	
-		//Continuar aqui!!!!!!!
-		//
-		//
-		//
-		//
-		if (argsFinal [0].equals("-f")){
-			File myFile = new File (argsFinal [2]);
-			int fileSize = (int) myFile.length();
+		if(argsFinal.length > 1){
+			if (argsFinal[0].equals("-f")){
+				File myFile = new File (argsFinal [2]);
+				int fileSize = (int) myFile.length();
+				byte [] byteArray = new byte [fileSize];
+				FileInputStream fis = new FileInputStream (myFile);
+				BufferedInputStream bis = new BufferedInputStream (fis);
+				int bytesRead;
+				int current = 0; 
+
+				out.writeObject(fileSize);
+
+				int nCiclo = fileSize/PACKET_SIZE;
+				int resto = fileSize%PACKET_SIZE;
+
+				for (int i = 0; i < nCiclo; i++){
+					bytesRead = bis.read(byteArray,current,PACKET_SIZE);
+					out.write(byteArray,current,bytesRead);
+					out.flush();
+					if (bytesRead > 0)
+						current += bytesRead;
+				}
+				if (resto > 0){
+					bytesRead = bis.read(byteArray,current,resto);
+					out.write(byteArray,current,bytesRead);
+					out.flush();
+				}
+
+				bis.close();
+				fis.close();
+
+			}
+
+			else if (argsFinal[0].equals("-r")){
+				//  -r contacto file
+				if(argsFinal.length == 3){
+					int fileSize = (int) in.readObject();
+					getFileFromServer(userName,fileSize,argsFinal[2],in);
+				}
+				// -r contacto ultima mensagem
+				else if(argsFinal.length == 2){
+
+				}
+				// -r que recebe tudo
+				else if(argsFinal.length == 1){
+
+				}
+			}
+		}
+			closeCon();
+		}
+
+	private static void getFileFromServer(String username,int fileSize, String fich, ObjectInputStream inStream) {
+		try {
 			byte [] byteArray = new byte [fileSize];
-			FileInputStream fis = new FileInputStream (myFile);
-			BufferedInputStream bis = new BufferedInputStream (fis);
+			FileOutputStream fosFrom = new FileOutputStream(new File(".").getAbsolutePath() + 
+					"//" + fich);
+			BufferedOutputStream bosFrom = new BufferedOutputStream(fosFrom);
+
+			int current = 0;
 			int bytesRead;
-			int current = 0; 
-			
-			out.writeObject(fileSize);
-			
 			int nCiclo = fileSize/PACKET_SIZE;
 			int resto = fileSize%PACKET_SIZE;
-			
+
 			for (int i = 0; i < nCiclo; i++){
-				bytesRead = bis.read(byteArray,current,PACKET_SIZE);
-				out.write(byteArray,current,bytesRead);
-				out.flush();
+				bytesRead = inStream.read(byteArray, current,PACKET_SIZE);
+				bosFrom.write(byteArray,current,bytesRead);
+				bosFrom.flush();
 				if (bytesRead > 0)
 					current += bytesRead;
 			}
+
 			if (resto > 0){
-				bytesRead = bis.read(byteArray,current,resto);
-				out.write(byteArray,current,bytesRead);
-				out.flush();
+				bytesRead = inStream.read(byteArray, current,resto);
+				bosFrom.write(byteArray,current,bytesRead);
+				bosFrom.flush();
 			}
-			
-			bis.close();
-			fis.close();
-				
+			bosFrom.close();
+			fosFrom.close();
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		
-		closeCon();
+
 	}
-	
+
 	//close connection
 	private static void closeCon (){
 		try {
@@ -174,7 +224,7 @@ public class myWhats {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private static String retryPwd(Scanner sc){
 		System.out.println("Por favor insira a PASSWORD:");
 		String pwd = null;

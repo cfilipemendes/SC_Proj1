@@ -2,6 +2,7 @@ package domain.server;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 public class server_skell {
 
@@ -184,8 +185,10 @@ public class server_skell {
 	 * @param contact
 	 * @param fich
 	 */
-	public void doR2operation(String contact, String fich) {
+	public void doR2operation(String from,String contact, String fich,ObjectOutputStream outStream) {
 		System.out.println("doR2operation com contacto: " + contact + " e com ficheiro " + fich);
+		files.getFile(from,contact,fich,outStream);
+
 	}
 
 	/**
