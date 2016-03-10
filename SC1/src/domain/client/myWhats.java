@@ -159,14 +159,26 @@ public class myWhats {
 			}
 
 			else if (argsFinal[0].equals("-r")){
+				int check;
 				//  -r contacto file
 				if(argsFinal.length == 3){
-					int fileSize = (int) in.readObject();
-					getFileFromServer(userName,fileSize,argsFinal[2],in);
+					check = (int)in.readObject();
+					if (check != 1){
+						System.out.println("Deu cana no -r 3!!!!!!");
+						return;
+					}
+					System.out.println("Entrou no getFileFromServer");
+					getFileFromServer(argsFinal[2],in);
 				}
 				// -r contacto ultima mensagem
 				else if(argsFinal.length == 2){
-
+					check = (int)in.readObject();
+					if (check != 1){
+						System.out.println("Deu cana no -r 2!!!!!!");
+						return;
+					}
+					System.out.println("Entrou no getContactConv");
+					getContactConv(in, userName);
 				}
 				// -r que recebe tudo
 				else if(argsFinal.length == 1){
@@ -174,11 +186,30 @@ public class myWhats {
 				}
 			}
 		}
-			closeCon();
-		}
+		int confirm = (int) in.readObject();
+		System.out.println("Confirm = " + confirm);
+		closeCon();
+	}
 
-	private static void getFileFromServer(String username,int fileSize, String fich, ObjectInputStream inStream) {
+	private static void getContactConv(ObjectInputStream inStream, String userName) {
 		try {
+			int nFile = (int) inStream.readObject();
+			String [] received;
+			for (int i = 0; i < nFile; i++){
+				received = (String[]) inStream.readObject();
+				if (received != null)
+					printR2 (received,userName);
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static void getFileFromServer(String fich, ObjectInputStream inStream) {
+		try {
+			int fileSize = (int) inStream.readObject();
 			byte [] byteArray = new byte [fileSize];
 			FileOutputStream fosFrom = new FileOutputStream(new File(".").getAbsolutePath() + 
 					"//" + fich);
@@ -208,6 +239,8 @@ public class myWhats {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 
@@ -377,5 +410,32 @@ public class myWhats {
 	//Verifica o IP dado pelo utilizador
 	public static boolean validIP(final String ip) {
 		return PATTERN.matcher(ip).matches();
+	}
+
+
+	private static void printR2(String[] received, String userName) {
+		StringBuilder sb = new StringBuilder ();
+		if (!received[0].equals(userName))
+			sb.append(received[0] + ": " + received[3]);
+		else
+			sb.append("me: " + received[3]);//oi
+		String[] data = received[2].split("_");
+		if (data[1].contains(".")){
+			String [] horaAux = data[1].split("\\.");
+			String [] hora = horaAux[0].split("-");
+			sb.append(data[0] + " " + hora[0] + ":" + hora[1]);
+		}
+		else{
+			String [] hora = data[1].split("-");
+			sb.append("\n" + data[0] + " " + hora[0] + ":" + hora[1]);
+		}
+		System.out.println(sb.toString());
+	}
+	private static void printR1(String[] received, String userName) {
+		if (received[0].equals(userName))
+			System.out.println("Contact: " + received[1]);
+		else
+			System.out.println("Contact: " + received[0]);
+		printR2(received,userName);
 	}
 }

@@ -144,10 +144,17 @@ public class myWhatsServer{
 							case "-r":
 								if (numArgs == 1)
 									skell.doR0operation();
-								else if (numArgs == 2)
-									skell.doR1operation(arguments[1]);
-								else
-									skell.doR2operation(username,arguments[1],arguments[2],outStream);
+								else if (skell.isUser(arguments[1]) != null) {
+									outStream.writeObject(1);
+									if (numArgs == 2)
+										confirm = skell.doR1operation(username,arguments[1],outStream);
+									else
+										confirm = skell.doR2operation(username,arguments[1],arguments[2],outStream);
+								}
+								else{
+									outStream.writeObject(-1);
+									return;
+								}
 								break;
 							case "-a":
 								if (skell.isUser(arguments[1]) != null){
@@ -165,7 +172,7 @@ public class myWhatsServer{
 								break;
 							}
 							System.out.println("Confirm = " + confirm);
-
+							outStream.writeObject(confirm);
 						}
 					}
 

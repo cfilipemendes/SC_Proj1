@@ -175,19 +175,23 @@ public class server_skell {
 	/**
 	 * vai buscar tudo o que foi enviado e recebido para um so contacto ou grupo
 	 * @param contact contacto ou grupo do qual se quer ver tudo o que foi enviado e recebido
+	 * @param outStream 
+	 * @param contact 
 	 */
-	public void doR1operation(String contact) {
-		System.out.println("doR1operation com contacto: " + contact);		
+	public int doR1operation(String username, String contact, ObjectOutputStream outStream) {
+		System.out.println("doR1operation com contacto: " + contact);
+		return files.getContactConv(username,contact,outStream);
 	}
 
 	/**
 	 * 
 	 * @param contact
 	 * @param fich
+	 * @return 
 	 */
-	public void doR2operation(String from,String contact, String fich,ObjectOutputStream outStream) {
+	public int doR2operation(String from,String contact, String fich,ObjectOutputStream outStream) {
 		System.out.println("doR2operation com contacto: " + contact + " e com ficheiro " + fich);
-		files.getFile(from,contact,fich,outStream);
+		return files.getFile(from,contact,fich,outStream);
 
 	}
 

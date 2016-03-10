@@ -5,6 +5,7 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -14,6 +15,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -258,12 +261,13 @@ public class PersistentFiles {
 
 	public void saveFile(String contact, String fich, String username, int fileSize, ObjectInputStream inStream) {
 		try {
+			data = GregorianCalendar.getInstance().getTime();
 			byte [] byteArray = new byte [fileSize];
 			FileOutputStream fosFrom = new FileOutputStream(new File(".").getAbsolutePath() + 
-					"//" + usersDir + "//"+ username + "//" + contact + "//" + username + "_" + contact + "_" + fich);
+					"//" + usersDir + "//"+ username + "//" + contact + "//" + username + "_" + contact + "_" + sdf.format(data) + "_" + fich);
 			BufferedOutputStream bosFrom = new BufferedOutputStream(fosFrom);
 			FileOutputStream fosTo = new FileOutputStream(new File(".").getAbsolutePath() + 
-					"//" + usersDir + "//" + contact + "//" + username + "//" + username + "_" + contact + "_" + fich);
+					"//" + usersDir + "//" + contact + "//" + username + "//" + username + "_" + contact + "_" + sdf.format(data) + "_" + fich);
 			BufferedOutputStream bosTo = new BufferedOutputStream(fosTo);
 
 			int current = 0;
@@ -303,9 +307,10 @@ public class PersistentFiles {
 
 	public void saveFileGroup(String contact, String fich, String username, int fileSize, ObjectInputStream inStream) {
 		try {
+			data = GregorianCalendar.getInstance().getTime();
 			byte [] byteArray = new byte [fileSize];
 			FileOutputStream fos = new FileOutputStream(new File(".").getAbsolutePath() + 
-					"//" + groupsDir + "//"+ contact + "//" + username + "_" + contact + "_" + fich);
+					"//" + groupsDir + "//"+ contact + "//" + username + "_" + contact + "_" + sdf.format(data) + "_" + fich);
 			BufferedOutputStream bos = new BufferedOutputStream(fos);
 
 			int current = 0;
@@ -336,15 +341,22 @@ public class PersistentFiles {
 		}
 	}
 
-	public void getFile(String from,String contact, String fich, ObjectOutputStream outStream) {
-		File myFile = new File (new File(".").getAbsolutePath() + 
-				"//" + usersDir + "//" + contact + "//" +  fich);
-		//File myFile = new File (new File(".").getAbsolutePath() + 
-			//	"//" + usersDir + "//" + contact + "//" + from + "_" + contact + "_" + fich);
+	public File hasFile (String from,String contact, String fich) {
+		File myDir = new File (new File(".").getAbsolutePath() + "//" + usersDir + "//" + contact + "//" + from);
+		for (File f : myDir.listFiles())
+			if (f.toString().contains(fich))
+				return f;
+		return null;
+	}
+
+	public int getFile(String from,String contact, String fich, ObjectOutputStream outStream) {
+		File myFile = hasFile(from,contact,fich);
+		if (myFile == null)
+			return -10;
 		int fileSize = (int) myFile.length();
-		byte [] byteArray = new byte [fileSize];
 		try {
 			outStream.writeObject(fileSize);
+			byte [] byteArray = new byte [fileSize];
 			FileInputStream fis = new FileInputStream (myFile);
 			BufferedInputStream bis = new BufferedInputStream (fis);
 			int bytesRead;
@@ -374,7 +386,76 @@ public class PersistentFiles {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return 1;
 
+	}
+
+	@SuppressWarnings("unchecked")
+	public int getContactConv(String username, String contact, ObjectOutputStream outStream) {
+		try {
+			File myDir = new File (new File(".").getAbsolutePath() + "//" + usersDir + "//" + contact + "//" + username);
+			int nFiles = myDir.list().length;
+			outStream.writeObject(nFiles);
+			String [] fileName;
+			String nameAux;
+			String [] finalF;
+			File[] aux = myDir.listFiles();
+			Arrays.sort(aux, new Comparator()		
+			{
+				public int compare(final Object o1, final Object o2){
+					return new Long(((File)o1).lastModified()).compareTo(new Long(((File) o2).lastModified()));
+				}
+			});
+
+			for (File f : aux){
+				nameAux = (f.getAbsolutePath().substring(f.getAbsolutePath().lastIndexOf("/")+1));
+				if (!nameAux.startsWith(".")){
+					finalF = new String [4];
+					fileName = nameAux.split("_");
+					//se o ficheiro for message
+					if (fileName.length == 4){
+						finalF [0] = fileName[0];
+						finalF [1] = fileName[1];
+						finalF [2] = (fileName[2] + "_" + fileName[3]);
+						finalF [3] = readFile(f);
+					}
+					//se o ficheiro for file
+					else if (fileName.length == 5){
+						finalF [0] = fileName[0];
+						finalF [1] = fileName[1];
+						finalF [2] = (fileName[2] + "_" + fileName[3]);
+						finalF [3] = fileName[4];
+					}
+					outStream.writeObject(finalF);
+					outStream.flush();
+				}
+				else{
+					outStream.writeObject(null);
+					outStream.flush();
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	public String readFile (File f) {
+		StringBuilder sb = new StringBuilder ();
+		try {
+			BufferedReader br = new BufferedReader (new FileReader (f));
+			String line;
+
+			while ((line = br.readLine()) != null) {
+				sb.append(line);
+				sb.append("\n");
+			}
+
+			br.close();
+		}catch (IOException e) {
+			e.printStackTrace();
+		}
+		return sb.toString();
 	}
 
 }
