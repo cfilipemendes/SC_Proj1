@@ -128,8 +128,12 @@ public class myWhatsServer{
 							case "-m":
 								if (skell.isUser(arguments[1]) != null)
 									skell.doMoperation(arguments[1],arguments[2],username);
-								else if (skell.isGroup(arguments[1]) != null)
-									skell.doMGroupOperation(arguments[1],arguments[2],username);
+								else if (skell.isGroup(arguments[1]) != null){
+									if (skell.hasUserInGroup(arguments[1], username))
+										skell.doMGroupOperation(arguments[1],arguments[2],username);
+									else
+										confirm = -7;
+								}
 								else
 									confirm = -1;
 								break;

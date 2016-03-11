@@ -125,7 +125,7 @@ public class myWhats {
 			closeCon();
 			return;
 		}
-		if(argsFinal.length > 1){
+		if(argsFinal.length >= 1){
 			if (argsFinal[0].equals("-f")){
 				File myFile = new File (argsFinal [2]);
 				int fileSize = (int) myFile.length();
@@ -182,13 +182,34 @@ public class myWhats {
 				}
 				// -r que recebe tudo
 				else if(argsFinal.length == 1){
-					
+					getLatestConvs(in,userName);
 				}
 			}
 		}
 		int confirm = (int) in.readObject();
 		System.out.println("Confirm = " + confirm);
 		closeCon();
+	}
+
+	private static void getLatestConvs(ObjectInputStream in, String userName) {
+		try {
+			int nContacts = (int) in.readObject();
+			String [] receivedC;
+			for(int i = 0; i < nContacts; i++){
+				receivedC = (String[]) in.readObject();
+				if (receivedC != null)
+					printR1 (receivedC,userName,false);
+			}
+			int nGroups = (int) in.readObject();
+			String [] receivedU;
+			for(int i = 0; i < nGroups; i++){
+				receivedU = (String[]) in.readObject();
+				if (receivedU != null)
+					printR1 (receivedU,userName,true);
+			}
+		} catch (ClassNotFoundException | IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static void getContactConv(ObjectInputStream inStream, String userName) {
@@ -431,11 +452,15 @@ public class myWhats {
 		}
 		System.out.println(sb.toString());
 	}
-	private static void printR1(String[] received, String userName) {
-		if (received[0].equals(userName))
+	private static void printR1(String[] received, String userName,boolean group) {
+		if (group)
 			System.out.println("Contact: " + received[1]);
-		else
-			System.out.println("Contact: " + received[0]);
+		else{
+			if (received[0].equals(userName))
+				System.out.println("Contact: " + received[1]);
+			else
+				System.out.println("Contact: " + received[0]);
+		}
 		printR2(received,userName);
 	}
 }

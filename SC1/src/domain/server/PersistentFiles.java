@@ -415,13 +415,7 @@ public class PersistentFiles {
 			String [] fileName;
 			String nameAux;
 			String [] finalF;
-			File[] aux = myDir.listFiles();
-			Arrays.sort(aux, new Comparator()		
-			{
-				public int compare(final Object o1, final Object o2){
-					return new Long(((File)o1).lastModified()).compareTo(new Long(((File) o2).lastModified()));
-				}
-			});
+			File[] aux = sortFiles(myDir);
 
 			for (File f : aux){
 				nameAux = (f.getAbsolutePath().substring(f.getAbsolutePath().lastIndexOf("/")+1));
@@ -459,7 +453,7 @@ public class PersistentFiles {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return 0;
+		return 1;
 	}
 
 	public String readFile (File f) {
@@ -481,7 +475,125 @@ public class PersistentFiles {
 	}
 
 	public void getLatestConvs(String username, ObjectOutputStream outStream) {
-		
+		File myDir = new File (new File(".").getAbsolutePath() + "//" + usersDir + "//" + username);
+		String nameAux;
+		String [] finalF,fileName;
+		File[] aux;
+		int i;
+		try {
+			i = myDir.listFiles().length;
+			outStream.writeObject(i);
+			outStream.flush();
+			for (File f : myDir.listFiles()){
+				aux = sortFiles(f);
+				i = 0;
+				if (aux.length == 0){
+					outStream.writeObject(null);
+					outStream.flush();
+				}
+				else{
+					nameAux = (aux[i].getAbsolutePath().substring(aux[i].getAbsolutePath().lastIndexOf("/")+1));
+					while((nameAux.startsWith(".")) && (aux.length > i+1)){
+						i++;
+						nameAux = (aux[i].getAbsolutePath().substring(aux[i].getAbsolutePath().lastIndexOf("/")+1));
+					}
+					if (!nameAux.startsWith(".")){
+						finalF = new String [4];
+						fileName = nameAux.split("_");
+						//se o ficheiro for message
+						if (fileName.length == 4){
+							finalF [0] = fileName[0];
+							finalF [1] = fileName[1];
+							finalF [2] = (fileName[2] + "_" + fileName[3]);
+							finalF [3] = readFile(aux[i]);
+							outStream.writeObject(finalF);
+							outStream.flush();
+						}
+						//se o ficheiro for file
+						else if (fileName.length == 5){
+							finalF [0] = fileName[0];
+							finalF [1] = fileName[1];
+							finalF [2] = (fileName[2] + "_" + fileName[3]);
+							finalF [3] = fileName[4];
+							outStream.writeObject(finalF);
+							outStream.flush();
+						}
+						else{
+							outStream.writeObject(null);
+							outStream.flush();
+						}
+					}
+					else{
+						outStream.writeObject(null);
+						outStream.flush();
+					}
+				} 
+			}
+			
+			myDir = new File (new File(".").getAbsolutePath() + "//" + groupsDir);
+			i = myDir.listFiles().length;
+			outStream.writeObject(i);
+			outStream.flush();
+			for (File f : myDir.listFiles()){
+				aux = sortFiles(f);
+				i = 0;
+				if (aux.length == 0){
+					outStream.writeObject(null);
+					outStream.flush();
+				}
+				else if (!hasUserInGroup(f.getAbsolutePath().substring(f.getAbsolutePath().lastIndexOf("/")+1), username)){
+					outStream.writeObject(null);
+					outStream.flush();
+				}
+				else{
+					nameAux = (aux[i].getAbsolutePath().substring(aux[i].getAbsolutePath().lastIndexOf("/")+1));
+					while((nameAux.startsWith(".") || nameAux.equals(f.getAbsolutePath().substring(f.getAbsolutePath().lastIndexOf("/")+1) + ".txt"))
+							&& (aux.length > i+1)){
+						i++;
+						nameAux = (aux[i].getAbsolutePath().substring(aux[i].getAbsolutePath().lastIndexOf("/")+1));
+					}
+					if (!nameAux.startsWith(".")){
+						finalF = new String [4];
+						fileName = nameAux.split("_");
+						//se o ficheiro for message
+						if (fileName.length == 4){
+							finalF [0] = fileName[0];
+							finalF [1] = fileName[1];
+							finalF [2] = (fileName[2] + "_" + fileName[3]);
+							finalF [3] = readFile(aux[i]);
+							outStream.writeObject(finalF);
+							outStream.flush();
+						}
+						//se o ficheiro for file
+						else if (fileName.length == 5){
+							finalF [0] = fileName[0];
+							finalF [1] = fileName[1];
+							finalF [2] = (fileName[2] + "_" + fileName[3]);
+							finalF [3] = fileName[4];
+							outStream.writeObject(finalF);
+							outStream.flush();
+						}
+						else{
+							outStream.writeObject(null);
+							outStream.flush();
+						}
+					}
+				}
+			}
+		}catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	@SuppressWarnings("unchecked")
+	public File [] sortFiles (File myDir){
+		File[] aux = myDir.listFiles();
+		Arrays.sort(aux, new Comparator()		
+		{
+			public int compare(final Object o1, final Object o2){
+				return new Long(((File)o1).lastModified()).compareTo(new Long(((File) o2).lastModified()));
+			}
+		});
+		return aux;
 	}
 
 }
