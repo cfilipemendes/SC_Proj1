@@ -118,6 +118,13 @@ public class server_skell {
 		}
 		return 1;
 	}
+	/**
+	 * 
+	 * @param i
+	 * @param args
+	 * @param size
+	 * @return
+	 */
 	private static boolean argTwo(int i , String [] args, int size){
 		if(i+2 > size)
 			return false;
@@ -125,6 +132,13 @@ public class server_skell {
 			return false;
 		return true;
 	}
+	/**
+	 * 
+	 * @param i
+	 * @param args
+	 * @param size
+	 * @return
+	 */
 	//Se tiver um unico argumento ah frente da flag
 	private static boolean argOne(int i, String [] args, int size){
 		if (i+1 > size)

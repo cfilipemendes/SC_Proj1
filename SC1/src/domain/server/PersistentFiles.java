@@ -402,7 +402,6 @@ public class PersistentFiles {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	public int getContactConv(String username, String contact, ObjectOutputStream outStream, boolean user) {
 		try {
 			File myDir;
@@ -474,6 +473,11 @@ public class PersistentFiles {
 		return sb.toString();
 	}
 
+	/**
+	 * 
+	 * @param username
+	 * @param outStream
+	 */
 	public void getLatestConvs(String username, ObjectOutputStream outStream) {
 		File myDir = new File (new File(".").getAbsolutePath() + "//" + usersDir + "//" + username);
 		String nameAux;
@@ -584,7 +588,7 @@ public class PersistentFiles {
 			e.printStackTrace();
 		}
 	}
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public File [] sortFiles (File myDir){
 		File[] aux = myDir.listFiles();
 		Arrays.sort(aux, new Comparator()		

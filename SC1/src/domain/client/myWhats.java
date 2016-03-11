@@ -191,6 +191,11 @@ public class myWhats {
 		closeCon();
 	}
 
+	/**
+	 * 
+	 * @param in
+	 * @param userName
+	 */
 	private static void getLatestConvs(ObjectInputStream in, String userName) {
 		try {
 			int nContacts = (int) in.readObject();

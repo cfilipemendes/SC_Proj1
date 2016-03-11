@@ -207,6 +207,9 @@ public class myWhatsServer{
 			}
 		}
 
+		/**
+		 * 
+		 */
 		private void closeThread() {
 			try {
 				outStream.close();
