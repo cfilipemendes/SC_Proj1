@@ -9,26 +9,62 @@ public class server_skell {
 	private static PersistentFiles files;
 	private static final String flags = "-p-m-f-r-a-d";
 
+	/**
+	 * 
+	 * @param usersFile
+	 * @param groupsDir
+	 * @param usersDir
+	 */
 	public server_skell (String usersFile, String groupsDir, String usersDir){
 		files = new PersistentFiles(usersFile,groupsDir,usersDir);
 	}
 
+	/**
+	 * 
+	 * @param pwd
+	 * @param username
+	 * @return
+	 * @throws IOException
+	 */
 	public boolean authenticate (String pwd, String username) throws IOException{
 		return files.checkUserPwd(pwd,username);
 	}
 
+	/**
+	 * 
+	 * @param username
+	 * @return
+	 * @throws IOException
+	 */
 	public String isUser(String username) throws IOException {
 		return files.hasUser(username);
 	}
 
+	/**
+	 * 
+	 * @param username
+	 * @param password
+	 */
 	public void createUser(String username, String password) {
 		files.addUser(username,password);
 	}
 
+	/**
+	 * 
+	 * @param groupname
+	 * @return
+	 * @throws IOException
+	 */
 	public String isGroup(String groupname) throws IOException{
 		return files.hasGroup(groupname);
 	}
 
+	/**
+	 * 
+	 * @param groupname
+	 * @param user
+	 * @return
+	 */
 	public boolean hasUserInGroup(String groupname, String user){
 		return files.hasUserInGroup(groupname, user);
 

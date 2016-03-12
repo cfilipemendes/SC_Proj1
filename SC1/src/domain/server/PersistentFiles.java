@@ -31,6 +31,12 @@ public class PersistentFiles {
 	private Date data;
 	private SimpleDateFormat sdf;
 
+	/**
+	 * 
+	 * @param usersFile
+	 * @param groupsDir
+	 * @param usersDir
+	 */
 	public PersistentFiles(String usersFile, String groupsDir, String usersDir) {
 		users = new File(usersFile + ".txt");
 		sdf = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss");
@@ -50,6 +56,13 @@ public class PersistentFiles {
 			dir.mkdir();
 	}
 
+	/**
+	 * 
+	 * @param pwd
+	 * @param username
+	 * @return
+	 * @throws IOException
+	 */
 	public boolean checkUserPwd(String pwd, String username) throws IOException {
 		br = new BufferedReader(new FileReader(users));
 		String line;
@@ -63,6 +76,12 @@ public class PersistentFiles {
 		return false;
 	}
 
+	/**
+	 * 
+	 * @param username
+	 * @return
+	 * @throws IOException
+	 */
 	public String hasUser(String username) throws IOException {
 		br = new BufferedReader(new FileReader(users));
 		String line;
@@ -76,6 +95,11 @@ public class PersistentFiles {
 		return null;
 	}
 
+	/**
+	 * 
+	 * @param username
+	 * @param password
+	 */
 	public void addUser(String username, String password) {
 		try {
 			BufferedWriter bw = new BufferedWriter(new FileWriter(users,true));
@@ -91,6 +115,12 @@ public class PersistentFiles {
 		}
 	}
 
+	/**
+	 * 
+	 * @param to
+	 * @param mess
+	 * @param from
+	 */
 	public void newMessage(String to, String mess, String from) {
 		File dir = new File (new File(".").getAbsolutePath() + "//" + usersDir + "//" + from + "//" + to);
 		if (!dir.exists())
@@ -118,6 +148,12 @@ public class PersistentFiles {
 		}
 	}
 
+	/**
+	 * 
+	 * @param groupname
+	 * @param mess
+	 * @param from
+	 */
 	public void newGroupMessage(String groupname, String mess, String from) {
 		try {
 			data = GregorianCalendar.getInstance().getTime();
@@ -136,6 +172,11 @@ public class PersistentFiles {
 
 	}
 
+	/**
+	 * 
+	 * @param groupname
+	 * @param creator
+	 */
 	public void createGroup (String groupname, String creator){
 		File dir = new File (new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname);
 		if (!dir.exists())
@@ -157,6 +198,11 @@ public class PersistentFiles {
 		}
 	}
 
+	/**
+	 * 
+	 * @param groupname
+	 * @param user
+	 */
 	public void addUserToGroup (String groupname, String user){
 		File group = new File(new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname + "//" + groupname + ".txt");
 		BufferedWriter bw;
@@ -171,6 +217,11 @@ public class PersistentFiles {
 		}
 	}
 
+	/**
+	 * 
+	 * @param groupname
+	 * @return
+	 */
 	public String creatorOfGroup (String groupname){
 		File group = new File(new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname + "//" + groupname + ".txt");
 		String creator = null;
@@ -185,6 +236,11 @@ public class PersistentFiles {
 		return creator;
 	}
 
+	/**
+	 * 
+	 * @param groupname
+	 * @param user
+	 */
 	public void rmFromGroup(String groupname, String user){
 		File group = new File(new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname + "//" + groupname + ".txt");
 		if (creatorOfGroup (groupname).equals(user)){
@@ -219,12 +275,22 @@ public class PersistentFiles {
 		}
 	}
 
+	/**
+	 * 
+	 * @param dir
+	 */
 	public void cleanDir (File dir) {
 		for(File f : dir.listFiles()){
 			f.delete();
 		}
 	}
 
+	/**
+	 * 
+	 * @param groupname
+	 * @param user
+	 * @return
+	 */
 	public boolean hasUserInGroup(String groupname, String user){
 		File group = new File(new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname + "//" + groupname + ".txt");
 		String line = null;
@@ -246,6 +312,12 @@ public class PersistentFiles {
 		return false;
 	}
 
+	/**
+	 * 
+	 * @param groupname
+	 * @return
+	 * @throws IOException
+	 */
 	public String hasGroup (String groupname) throws IOException{
 		File group = new File (new File(".").getAbsolutePath()+ "//" + groupsDir + "//" + groupname + "//" + groupname + ".txt");
 		String readLine = null;
@@ -259,6 +331,14 @@ public class PersistentFiles {
 
 	}
 
+	/**
+	 * 
+	 * @param contact
+	 * @param fich
+	 * @param username
+	 * @param fileSize
+	 * @param inStream
+	 */
 	public void saveFile(String contact, String fich, String username, int fileSize, ObjectInputStream inStream) {
 		try {
 			data = GregorianCalendar.getInstance().getTime();
@@ -305,6 +385,14 @@ public class PersistentFiles {
 
 	}
 
+	/**
+	 * 
+	 * @param contact
+	 * @param fich
+	 * @param username
+	 * @param fileSize
+	 * @param inStream
+	 */
 	public void saveFileGroup(String contact, String fich, String username, int fileSize, ObjectInputStream inStream) {
 		try {
 			data = GregorianCalendar.getInstance().getTime();
@@ -341,6 +429,13 @@ public class PersistentFiles {
 		}
 	}
 
+	/**
+	 * 
+	 * @param from
+	 * @param contact
+	 * @param fich
+	 * @return
+	 */
 	public File userHasFile (String from,String contact, String fich) {
 		File myDir = new File (new File(".").getAbsolutePath() + "//" + usersDir + "//" + contact + "//" + from);
 		for (File f : myDir.listFiles())
@@ -348,6 +443,14 @@ public class PersistentFiles {
 				return f;
 		return null;
 	}
+	
+	/**
+	 * 
+	 * @param from
+	 * @param group
+	 * @param fich
+	 * @return
+	 */
 	public File groupHasFile (String from,String group, String fich) {
 		File myDir = new File (new File(".").getAbsolutePath() + "//" + groupsDir + "//" + group);
 		for (File f : myDir.listFiles())
@@ -356,6 +459,15 @@ public class PersistentFiles {
 		return null;
 	}
 
+	/**
+	 * 
+	 * @param from
+	 * @param contact
+	 * @param fich
+	 * @param outStream
+	 * @param user
+	 * @return
+	 */
 	public int getFile(String from,String contact, String fich, ObjectOutputStream outStream,boolean user) {
 		File myFile;
 		if (user)
@@ -402,6 +514,14 @@ public class PersistentFiles {
 
 	}
 
+	/**
+	 * 
+	 * @param username
+	 * @param contact
+	 * @param outStream
+	 * @param user
+	 * @return
+	 */
 	public int getContactConv(String username, String contact, ObjectOutputStream outStream, boolean user) {
 		try {
 			File myDir;
@@ -455,6 +575,11 @@ public class PersistentFiles {
 		return 1;
 	}
 
+	/**
+	 * 
+	 * @param f
+	 * @return
+	 */
 	public String readFile (File f) {
 		StringBuilder sb = new StringBuilder ();
 		try {
@@ -588,6 +713,12 @@ public class PersistentFiles {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * 
+	 * @param myDir
+	 * @return
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public File [] sortFiles (File myDir){
 		File[] aux = myDir.listFiles();

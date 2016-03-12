@@ -53,7 +53,7 @@ public class myWhats {
 
 		int valid = validate(args);
 		if (valid != 1 && valid != -10){
-			verifyOutput(valid);
+			verifyInput(valid);
 			return;
 		}
 
@@ -217,6 +217,11 @@ public class myWhats {
 		}
 	}
 
+	/**
+	 * 
+	 * @param inStream
+	 * @param userName
+	 */
 	private static void getContactConv(ObjectInputStream inStream, String userName) {
 		try {
 			int nFile = (int) inStream.readObject();
@@ -233,6 +238,11 @@ public class myWhats {
 		}
 	}
 
+	/**
+	 * 
+	 * @param fich
+	 * @param inStream
+	 */
 	private static void getFileFromServer(String fich, ObjectInputStream inStream) {
 		try {
 			int fileSize = (int) inStream.readObject();
@@ -272,7 +282,9 @@ public class myWhats {
 
 	}
 
-	//close connection
+	/**
+	 * 
+	 */
 	private static void closeCon (){
 		try {
 			out.close();
@@ -284,6 +296,11 @@ public class myWhats {
 		}
 	}
 
+	/**
+	 * 
+	 * @param sc
+	 * @return
+	 */
 	private static String retryPwd(Scanner sc){
 		System.out.println("Por favor insira a PASSWORD:");
 		String pwd = null;
@@ -291,7 +308,11 @@ public class myWhats {
 		return pwd;
 	}
 
-	private static void verifyOutput(int fromServer) {
+	/**
+	 * 
+	 * @param fromServer
+	 */
+	private static void verifyInput(int fromServer) {
 		switch(fromServer){
 		case 1:
 			System.out.println("Oistras gambas!");
@@ -321,35 +342,39 @@ public class myWhats {
 
 	}
 
-	//-1 x == null
-	//-2 flag -p n e a primeira
-	//-3 argumento da pass e uma flag
-	//-4 argumentos insuficientes para a pass
-	//-5 flag invalida a seguir ao -p
-	//-6 ordem errada da flag
-	//-7 argumentos das flag invalidos
-	//-10 falta password
-	public static int validate (String [] x){
+	/**
+	 * -1 x == null
+	 * -2 flag -p n e a primeira
+	 * -3 argumento da pass e uma flag
+	 * -4 argumentos insuficientes para a pass
+	 * -5 flag invalida a seguir ao -p
+	 * -6 ordem errada da flag
+	 * -7 argumentos das flag invalidos
+	 * -10 falta password
+	 * @param args lista de argumentos recebidos no cliente
+	 * @return o tipo de erro em int
+	 */
+	public static int validate (String [] args){
 		StringBuilder y = new StringBuilder ();
-		if (x == null)
+		if (args == null)
 			return -1;
 
-		int size = x.length-1;
+		int size = args.length-1;
 
 		for (int i = 2; i <= size; i++){
-			switch(x[i]){
+			switch(args[i]){
 			case "-p":
 				if(y.length() != 0)
 					return -2;
 				if(i+1 <= size){
-					if(flags.contains(x[i+1])){
+					if(flags.contains(args[i+1])){
 						return -3;
 					}
 				}else
 					return -4;
 
 				if(i+2 < size)
-					if(!flags.contains(x[i+2]))
+					if(!flags.contains(args[i+2]))
 						return -5;
 				y.append('p');
 				break;
@@ -360,7 +385,7 @@ public class myWhats {
 						y.toString().contains("a") ||
 						y.toString().contains("d"))
 					return -6;
-				if(!argTwo(i, x, size))
+				if(!argTwo(i, args, size))
 					return -7;
 				y.append('m');
 				break;
@@ -371,7 +396,7 @@ public class myWhats {
 						y.toString().contains("a") ||
 						y.toString().contains("d"))
 					return -6;
-				if(!argTwo(i, x, size))
+				if(!argTwo(i, args, size))
 					return -7;
 				y.append('f');
 				break;
@@ -382,7 +407,7 @@ public class myWhats {
 						y.toString().contains("a") ||
 						y.toString().contains("d"))
 					return -6;
-				if (!argTwo(i, x, size) && !argOne(i, x, size) && size != i){
+				if (!argTwo(i, args, size) && !argOne(i, args, size) && size != i){
 					return -7;
 				}
 				y.append('r');
@@ -394,7 +419,7 @@ public class myWhats {
 						y.toString().contains("a") ||
 						y.toString().contains("d"))
 					return -6;
-				if(!argTwo(i, x, size))
+				if(!argTwo(i, args, size))
 					return -7;
 				y.append('a');
 				break;
@@ -405,7 +430,7 @@ public class myWhats {
 						y.toString().contains("a") ||
 						y.toString().contains("d"))
 					return -6;
-				if(!argTwo(i, x, size))
+				if(!argTwo(i, args, size))
 					return -7;
 				y.append('d');
 				break;
@@ -416,6 +441,13 @@ public class myWhats {
 		return 1;
 	}		
 
+	/**
+	 * Verifica se existem dois argumentos validos depois da flag 
+	 * @param i indice do ciclo
+	 * @param args os argumentos recebidos pelo cliente desde a flag
+	 * @param size numero de parametros que sucedem a flag
+	 * @return true se existirem dois argumentos depois da flag
+	 */
 	//Se tiver dois argumentos ah frente da flag
 	private static boolean argTwo(int i , String [] args, int size){
 		if(i+2 > size)
@@ -424,6 +456,13 @@ public class myWhats {
 			return false;
 		return true;
 	}
+	/**
+	 * Verifica se existe um argumento valido depois da flag 
+	 * @param i indice do ciclo
+	 * @param args os argumentos recebidos pelo cliente desde a flag
+	 * @param size numero de parametros que sucedem a flag
+	 * @return true se existir um argumento depois da flag
+	 */
 	//Se tiver um unico argumento ah frente da flag
 	private static boolean argOne(int i, String [] args, int size){
 		if (i+1 > size)
@@ -433,12 +472,21 @@ public class myWhats {
 		return true;
 	}
 
+	/**
+	 * verifica se o endereco ip eh valido
+	 * @param ip endereco a ser testado
+	 * @return boolean true se o endereco ip for valido
+	 */
 	//Verifica o IP dado pelo utilizador
 	public static boolean validIP(final String ip) {
 		return PATTERN.matcher(ip).matches();
 	}
 
-
+	/**
+	 * imprime no cliente o -r com 2 argumentos
+	 * @param received nome dos ficheiros e data
+	 * @param userName nome do user
+	 */
 	private static void printR2(String[] received, String userName) {
 		StringBuilder sb = new StringBuilder ();
 		if (!received[0].equals(userName))
@@ -457,6 +505,12 @@ public class myWhats {
 		}
 		System.out.println(sb.toString());
 	}
+	/**
+	 * 
+	 * @param received
+	 * @param userName
+	 * @param group
+	 */
 	private static void printR1(String[] received, String userName,boolean group) {
 		if (group)
 			System.out.println("Contact: " + received[1]);
