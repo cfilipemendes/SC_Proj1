@@ -30,17 +30,17 @@ public class myWhats {
 	public static void main (String [] args) throws UnknownHostException, IOException, ClassNotFoundException{
 
 		if (args.length < 2){
-			System.err.println("Input insuficiente");
+			System.err.println(Errors.errorConfirm(-2));
 			return;
 		}
 		else if (args.length > 2)
 			if (!flags.contains(args[2])){
-				System.err.println("Input incorrecto");
+				System.err.println(Errors.errorConfirm(-3));
 				return;
 			}
 
 		if (args.length > 7)
-			System.err.println("Input excede o esperado");
+			System.err.println(Errors.errorConfirm(-4));
 
 		String userName = args[0];
 		String ip = args[1].split(":")[0];
@@ -51,7 +51,7 @@ public class myWhats {
 			return;
 		}
 
-		int valid = validate(args);
+		int valid = Errors.validate(args);
 		if (valid != 1 && valid != -10){
 			verifyInput(valid);
 			return;
@@ -187,10 +187,14 @@ public class myWhats {
 			}
 		}
 		int confirm = (int) in.readObject();
-		System.out.println("Confirm = " + confirm);
+		System.out.println(Errors.errorConfirm(confirm));
 		closeCon();
 	}
-
+	// ----------------------  FIM DO MAIN -----------------------------
+	// -----------------------------------------------------------------
+	//------------------------------------------------------------------
+	//------------------------------------------------------------------
+	//------------------------------------------------------------------
 	/**
 	 * 
 	 * @param in
@@ -354,123 +358,9 @@ public class myWhats {
 	 * @param args lista de argumentos recebidos no cliente
 	 * @return o tipo de erro em int
 	 */
-	public static int validate (String [] args){
-		StringBuilder y = new StringBuilder ();
-		if (args == null)
-			return -1;
+	
 
-		int size = args.length-1;
 
-		for (int i = 2; i <= size; i++){
-			switch(args[i]){
-			case "-p":
-				if(y.length() != 0)
-					return -2;
-				if(i+1 <= size){
-					if(flags.contains(args[i+1])){
-						return -3;
-					}
-				}else
-					return -4;
-
-				if(i+2 < size)
-					if(!flags.contains(args[i+2]))
-						return -5;
-				y.append('p');
-				break;
-			case "-m":
-				if (y.toString().contains("m") || 
-						y.toString().contains("f") ||
-						y.toString().contains("r") ||
-						y.toString().contains("a") ||
-						y.toString().contains("d"))
-					return -6;
-				if(!argTwo(i, args, size))
-					return -7;
-				y.append('m');
-				break;
-			case "-f":
-				if (y.toString().contains("m") || 
-						y.toString().contains("f") ||
-						y.toString().contains("r") ||
-						y.toString().contains("a") ||
-						y.toString().contains("d"))
-					return -6;
-				if(!argTwo(i, args, size))
-					return -7;
-				y.append('f');
-				break;
-			case "-r":
-				if (y.toString().contains("m") || 
-						y.toString().contains("f") ||
-						y.toString().contains("r") ||
-						y.toString().contains("a") ||
-						y.toString().contains("d"))
-					return -6;
-				if (!argTwo(i, args, size) && !argOne(i, args, size) && size != i){
-					return -7;
-				}
-				y.append('r');
-				break;
-			case "-a":
-				if (y.toString().contains("m") || 
-						y.toString().contains("f") ||
-						y.toString().contains("r") ||
-						y.toString().contains("a") ||
-						y.toString().contains("d"))
-					return -6;
-				if(!argTwo(i, args, size))
-					return -7;
-				y.append('a');
-				break;
-			case "-d":
-				if (y.toString().contains("m") || 
-						y.toString().contains("f") ||
-						y.toString().contains("r") ||
-						y.toString().contains("a") ||
-						y.toString().contains("d"))
-					return -6;
-				if(!argTwo(i, args, size))
-					return -7;
-				y.append('d');
-				break;
-			}
-		}
-		if (!y.toString().contains("p"))
-			return -10;
-		return 1;
-	}		
-
-	/**
-	 * Verifica se existem dois argumentos validos depois da flag 
-	 * @param i indice do ciclo
-	 * @param args os argumentos recebidos pelo cliente desde a flag
-	 * @param size numero de parametros que sucedem a flag
-	 * @return true se existirem dois argumentos depois da flag
-	 */
-	//Se tiver dois argumentos ah frente da flag
-	private static boolean argTwo(int i , String [] args, int size){
-		if(i+2 > size)
-			return false;
-		if (flags.contains(args[i+1]) || flags.contains(args[i+2]))
-			return false;
-		return true;
-	}
-	/**
-	 * Verifica se existe um argumento valido depois da flag 
-	 * @param i indice do ciclo
-	 * @param args os argumentos recebidos pelo cliente desde a flag
-	 * @param size numero de parametros que sucedem a flag
-	 * @return true se existir um argumento depois da flag
-	 */
-	//Se tiver um unico argumento ah frente da flag
-	private static boolean argOne(int i, String [] args, int size){
-		if (i+1 > size)
-			return false;
-		if (flags.contains(args[i+1]))
-			return false;
-		return true;
-	}
 
 	/**
 	 * verifica se o endereco ip eh valido
