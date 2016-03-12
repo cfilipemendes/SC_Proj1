@@ -239,7 +239,7 @@ public class PersistentFiles {
 	}
 
 	/**
-	 * remove um utilizador do grupo, se o utilizador a ser removido do grupo for o creador
+	 * remove um utilizador do grupo, se o utilizador a ser removido do grupo for o criador
 	 * entao remove tambem o grupo
 	 * @param groupname nome do grupo ao qual o utilizador vai ser removido
 	 * @param user nome do utilizador que vai ser removido
@@ -318,7 +318,7 @@ public class PersistentFiles {
 	/**
 	 * verifica se existe um grupo no servidor
 	 * @param groupname nome do grupo que se pertende verificar se existe
-	 * @return nome do creador do grupo ou null se nao existir grupo
+	 * @return nome do criador do grupo ou null se nao existir grupo
 	 * @throws IOException
 	 */
 	public String hasGroup (String groupname) throws IOException{
@@ -389,12 +389,12 @@ public class PersistentFiles {
 	}
 
 	/**
-	 * 
-	 * @param contact
-	 * @param fich
-	 * @param username
-	 * @param fileSize
-	 * @param inStream
+	 * guarda um ficheiro no grupo
+	 * @param contact nome do remetente
+	 * @param fich nome do ficheiro
+	 * @param username nome de quem enviou o ficheiro
+	 * @param fileSize tamanho do ficheiro em bytes
+	 * @param inStream stream pela qual vai acontecer a comunicacao cliente servidor
 	 */
 	public void saveFileGroup(String contact, String fich, String username, int fileSize, ObjectInputStream inStream) {
 		try {
@@ -433,11 +433,11 @@ public class PersistentFiles {
 	}
 
 	/**
-	 * 
-	 * @param from
-	 * @param contact
-	 * @param fich
-	 * @return
+	 * verifica se o utilizador tem um ficheiro especifico
+	 * @param from nome de quem enviou o ficheiro
+	 * @param contact nome do remetente
+	 * @param fich nome do ficheiro enviado
+	 * @return File se existir o ficheiro fich ou null se nao existir
 	 */
 	public File userHasFile (String from,String contact, String fich) {
 		File myDir = new File (new File(".").getAbsolutePath() + "//" + usersDir + "//" + contact + "//" + from);
@@ -448,13 +448,12 @@ public class PersistentFiles {
 	}
 	
 	/**
-	 * 
-	 * @param from
-	 * @param group
-	 * @param fich
-	 * @return
+	 * existe um ficheiro especifico no grupo
+	 * @param group nome do grupo
+	 * @param fich nome do ficheiro
+	 * @return File ficheiro se existir no grupo ou null se nao existir
 	 */
-	public File groupHasFile (String from,String group, String fich) {
+	public File groupHasFile (String group, String fich) {
 		File myDir = new File (new File(".").getAbsolutePath() + "//" + groupsDir + "//" + group);
 		for (File f : myDir.listFiles())
 			if (f.toString().contains(fich))
@@ -463,20 +462,20 @@ public class PersistentFiles {
 	}
 
 	/**
-	 * 
-	 * @param from
-	 * @param contact
-	 * @param fich
-	 * @param outStream
-	 * @param user
-	 * @return
+	 * envia o ficheiro para o cliente
+	 * @param from nome de quem enviou o ficheiro
+	 * @param contact nome do remetente
+	 * @param fich nome do fichero
+	 * @param outStream stream pela qual vai acontecer a comunicacao servidor cliente
+	 * @param user se for user vai buscar ao folder de users senao vai ao folder de groups
+	 * @return int 1 se for bem sucedido e -10 se nao existir ficheiro
 	 */
 	public int getFile(String from,String contact, String fich, ObjectOutputStream outStream,boolean user) {
 		File myFile;
 		if (user)
 			myFile = userHasFile(from,contact,fich);
 		else
-			myFile = groupHasFile(from,contact,fich);
+			myFile = groupHasFile(contact,fich);
 
 		if (myFile == null)
 			return -10;
@@ -518,12 +517,12 @@ public class PersistentFiles {
 	}
 
 	/**
-	 * 
-	 * @param username
-	 * @param contact
-	 * @param outStream
-	 * @param user
-	 * @return
+	 * envia para o cliente a conversa completa entre o user e o cliente
+	 * @param username nome do utilizador
+	 * @param contact nome do contacto entre o qual existiu a conversa
+	 * @param outStream stream pela qual vai acontecer a comunicacao cliente servidor
+	 * @param user se for user vai buscar a convera a directoria dos users senao vai buscar a directoria dos grupos
+	 * @return 1 se for tudo bem sucedido
 	 */
 	public int getContactConv(String username, String contact, ObjectOutputStream outStream, boolean user) {
 		try {
@@ -579,9 +578,9 @@ public class PersistentFiles {
 	}
 
 	/**
-	 * 
-	 * @param f
-	 * @return
+	 * le o conteudo de um ficheiro
+	 * @param f nome do ficheiro
+	 * @return String com o conteudo do ficheiro
 	 */
 	public String readFile (File f) {
 		StringBuilder sb = new StringBuilder ();
@@ -602,9 +601,9 @@ public class PersistentFiles {
 	}
 
 	/**
-	 * 
-	 * @param username
-	 * @param outStream
+	 * envia para o cliente as ultimas mensagens que o user tem com os seu contactos e com os seus grupos
+	 * @param username nome do utilizador
+	 * @param outStream stream pela qual vai acontecer a comunicacao cliente servidor
 	 */
 	public void getLatestConvs(String username, ObjectOutputStream outStream) {
 		File myDir = new File (new File(".").getAbsolutePath() + "//" + usersDir + "//" + username);
@@ -718,8 +717,8 @@ public class PersistentFiles {
 	}
 	
 	/**
-	 * 
-	 * @param myDir
+	 * organiza os ficheiros de uma directoria por ordem de criacao
+	 * @param myDir nome da directoria a ser organizada
 	 * @return
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })

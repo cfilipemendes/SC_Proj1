@@ -208,7 +208,8 @@ public class myWhatsServer{
 		}
 
 		/**
-		 * 
+		 * fecha as streams de comunicacao cliente servidor e servidor cliente
+		 * fecha a socket de ligacao ao cliente
 		 */
 		private void closeThread() {
 			try {
