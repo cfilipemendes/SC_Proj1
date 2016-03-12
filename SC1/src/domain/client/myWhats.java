@@ -505,6 +505,7 @@ public class myWhats {
 		}
 		System.out.println(sb.toString());
 	}
+	
 	/**
 	 * 
 	 * @param received

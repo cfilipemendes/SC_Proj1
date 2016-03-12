@@ -32,10 +32,10 @@ public class PersistentFiles {
 	private SimpleDateFormat sdf;
 
 	/**
-	 * 
-	 * @param usersFile
-	 * @param groupsDir
-	 * @param usersDir
+	 * construtor de PresistentFiles
+	 * @param usersFile nome do ficheiro de texto dos users e das suas pws
+	 * @param groupsDir nome da directoria dos grupos
+	 * @param usersDir nome da directoria dos clientes
 	 */
 	public PersistentFiles(String usersFile, String groupsDir, String usersDir) {
 		users = new File(usersFile + ".txt");
@@ -57,10 +57,10 @@ public class PersistentFiles {
 	}
 
 	/**
-	 * 
-	 * @param pwd
-	 * @param username
-	 * @return
+	 * verifica se o user corresponde a sua pw
+	 * @param pwd password a ser testatda
+	 * @param username nome do utilizador
+	 * @return boolean true se a password for correcta
 	 * @throws IOException
 	 */
 	public boolean checkUserPwd(String pwd, String username) throws IOException {
@@ -77,9 +77,9 @@ public class PersistentFiles {
 	}
 
 	/**
-	 * 
-	 * @param username
-	 * @return
+	 * verifica se existe o user criado
+	 * @param username nome do user a verificar
+	 * @return boolean true se o user existir
 	 * @throws IOException
 	 */
 	public String hasUser(String username) throws IOException {
@@ -96,9 +96,11 @@ public class PersistentFiles {
 	}
 
 	/**
-	 * 
-	 * @param username
-	 * @param password
+	 * adiciona um user ao servidor
+	 * adiciona o seu username e a sua password ao ficheiro
+	 * adiciona uma directoria com o seu nome na directoria dos users
+	 * @param username nome do utilizador
+	 * @param password password do utilizador
 	 */
 	public void addUser(String username, String password) {
 		try {
@@ -116,10 +118,10 @@ public class PersistentFiles {
 	}
 
 	/**
-	 * 
-	 * @param to
-	 * @param mess
-	 * @param from
+	 * cria uma nova mensagem e adiciona ah directoria do remetente e do que enviou
+	 * @param to nome do remetente
+	 * @param mess conteudo da mensagem
+	 * @param from nome de quem enviou
 	 */
 	public void newMessage(String to, String mess, String from) {
 		File dir = new File (new File(".").getAbsolutePath() + "//" + usersDir + "//" + from + "//" + to);
@@ -149,10 +151,10 @@ public class PersistentFiles {
 	}
 
 	/**
-	 * 
-	 * @param groupname
-	 * @param mess
-	 * @param from
+	 * envia uma mensagem para um grupo criando la o ficheiro de texto com a conversa
+	 * @param groupname nome do grupo para o qual vai ser enviada a mensagem
+	 * @param mess conteudo da mensagem
+	 * @param from nome de quem enviou a mensagem
 	 */
 	public void newGroupMessage(String groupname, String mess, String from) {
 		try {
@@ -173,9 +175,9 @@ public class PersistentFiles {
 	}
 
 	/**
-	 * 
-	 * @param groupname
-	 * @param creator
+	 * criacao de um grupo novo
+	 * @param groupname nome do grupo
+	 * @param creator nome do creador do grupo
 	 */
 	public void createGroup (String groupname, String creator){
 		File dir = new File (new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname);
@@ -199,9 +201,9 @@ public class PersistentFiles {
 	}
 
 	/**
-	 * 
-	 * @param groupname
-	 * @param user
+	 * adiciona um utilizador ao grupo
+	 * @param groupname nome do grupo ao qual o utilizador vai ser adicionado
+	 * @param user nome do utilizador que vai ser adicionado
 	 */
 	public void addUserToGroup (String groupname, String user){
 		File group = new File(new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname + "//" + groupname + ".txt");
@@ -218,9 +220,9 @@ public class PersistentFiles {
 	}
 
 	/**
-	 * 
-	 * @param groupname
-	 * @return
+	 * verifica qual eh o creador do grupo
+	 * @param groupname nome do grupo
+	 * @return o nome do creador do grupo ou null se nao existir creador
 	 */
 	public String creatorOfGroup (String groupname){
 		File group = new File(new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname + "//" + groupname + ".txt");
@@ -237,9 +239,10 @@ public class PersistentFiles {
 	}
 
 	/**
-	 * 
-	 * @param groupname
-	 * @param user
+	 * remove um utilizador do grupo, se o utilizador a ser removido do grupo for o creador
+	 * entao remove tambem o grupo
+	 * @param groupname nome do grupo ao qual o utilizador vai ser removido
+	 * @param user nome do utilizador que vai ser removido
 	 */
 	public void rmFromGroup(String groupname, String user){
 		File group = new File(new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname + "//" + groupname + ".txt");
@@ -276,8 +279,8 @@ public class PersistentFiles {
 	}
 
 	/**
-	 * 
-	 * @param dir
+	 * metodo para apagar todos os ficheiros de uma directoria
+	 * @param dir nome da directoria
 	 */
 	public void cleanDir (File dir) {
 		for(File f : dir.listFiles()){
@@ -286,10 +289,10 @@ public class PersistentFiles {
 	}
 
 	/**
-	 * 
-	 * @param groupname
-	 * @param user
-	 * @return
+	 * verifica se existe um especifico utilizador no grupo
+	 * @param groupname nome do grupo do qual se quer verificar se existe utilizador
+	 * @param user nome do utilizador que se quer confirmar se pertence ao grupo
+	 * @return boolean true se o utilizador pertencer ao grupo
 	 */
 	public boolean hasUserInGroup(String groupname, String user){
 		File group = new File(new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname + "//" + groupname + ".txt");
@@ -313,9 +316,9 @@ public class PersistentFiles {
 	}
 
 	/**
-	 * 
-	 * @param groupname
-	 * @return
+	 * verifica se existe um grupo no servidor
+	 * @param groupname nome do grupo que se pertende verificar se existe
+	 * @return nome do creador do grupo ou null se nao existir grupo
 	 * @throws IOException
 	 */
 	public String hasGroup (String groupname) throws IOException{
@@ -332,12 +335,12 @@ public class PersistentFiles {
 	}
 
 	/**
-	 * 
-	 * @param contact
-	 * @param fich
-	 * @param username
-	 * @param fileSize
-	 * @param inStream
+	 * recebe um ficheiro do cliente e guarda na pasta do remetente e de quem o enviou
+	 * @param contact nome do remetente
+	 * @param fich nome do ficheiro
+	 * @param username nome de quem envia o ficheiro
+	 * @param fileSize tamanho do ficheiro em bytes
+	 * @param inStream stream pela qual vai acontecer a comunicacao cliente servidor
 	 */
 	public void saveFile(String contact, String fich, String username, int fileSize, ObjectInputStream inStream) {
 		try {
