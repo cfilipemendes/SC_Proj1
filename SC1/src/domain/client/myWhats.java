@@ -196,25 +196,28 @@ public class myWhats {
 	//------------------------------------------------------------------
 	//------------------------------------------------------------------
 	/**
-	 * 
-	 * @param in
-	 * @param userName
+	 * recebe do servidor a ultima conversa que o utilizador teve com 
+	 * todos os seus contactos e grupos
+	 * @param in stream pela qual vai acontecer a comunicacao servidor cliente
+	 * @param userName nome do utilizador que esta a pedir as conversas
 	 */
 	private static void getLatestConvs(ObjectInputStream in, String userName) {
 		try {
+			//numero de contactos que o utilizador tem
 			int nContacts = (int) in.readObject();
 			String [] receivedC;
 			for(int i = 0; i < nContacts; i++){
 				receivedC = (String[]) in.readObject();
 				if (receivedC != null)
-					printR1 (receivedC,userName,false);
+					printR0 (receivedC,userName,false);
 			}
+			//numero de grupos que o utilizador pertence
 			int nGroups = (int) in.readObject();
 			String [] receivedU;
 			for(int i = 0; i < nGroups; i++){
 				receivedU = (String[]) in.readObject();
 				if (receivedU != null)
-					printR1 (receivedU,userName,true);
+					printR0 (receivedU,userName,true);
 			}
 		} catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
@@ -222,9 +225,10 @@ public class myWhats {
 	}
 
 	/**
-	 * 
-	 * @param inStream
-	 * @param userName
+	 * recebe do servidor a conversa completa que o utilizador teve com outro
+	 * contacto
+	 * @param inStream stream pela qual vai acontecer a comunicacao servidor cliente
+	 * @param userName nome do utilizador
 	 */
 	private static void getContactConv(ObjectInputStream inStream, String userName) {
 		try {
@@ -233,7 +237,7 @@ public class myWhats {
 			for (int i = 0; i < nFile; i++){
 				received = (String[]) inStream.readObject();
 				if (received != null)
-					printR2 (received,userName);
+					printR1 (received,userName);
 			}
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -243,9 +247,9 @@ public class myWhats {
 	}
 
 	/**
-	 * 
-	 * @param fich
-	 * @param inStream
+	 * recebe um ficheiro do servidor
+	 * @param fich nome do ficheiro a ser recebido do servidor
+	 * @param inStream stream pela qual vai acontecer a comunicacao servidor cliente
 	 */
 	private static void getFileFromServer(String fich, ObjectInputStream inStream) {
 		try {
@@ -287,7 +291,8 @@ public class myWhats {
 	}
 
 	/**
-	 * 
+	 * fecha a ligacao com as streams in e out com o scanner sc
+	 * e com a socket soc
 	 */
 	private static void closeCon (){
 		try {
@@ -301,9 +306,9 @@ public class myWhats {
 	}
 
 	/**
-	 * 
-	 * @param sc
-	 * @return
+	 * pede ao cliente a password novamente
+	 * @param sc Scanner por onde vai passar o input
+	 * @return uma tentativa de password
 	 */
 	private static String retryPwd(Scanner sc){
 		System.out.println("Por favor insira a PASSWORD:");
@@ -313,14 +318,11 @@ public class myWhats {
 	}
 
 	/**
-	 * 
-	 * @param fromServer
+	 * imprime na consola o tipo de erro que sucedeu com o input
+	 * @param fromServer int com o tipo de erro a ser decodificado
 	 */
 	private static void verifyInput(int fromServer) {
 		switch(fromServer){
-		case 1:
-			System.out.println("Oistras gambas!");
-			break;
 		case -1:
 			System.out.println("Argumentos recebidos a null!");
 			break;
@@ -373,11 +375,11 @@ public class myWhats {
 	}
 
 	/**
-	 * imprime no cliente o -r com 2 argumentos
+	 * imprime no cliente o -r com 1 argumentos
 	 * @param received nome dos ficheiros e data
-	 * @param userName nome do user
+	 * @param userName nome do utilizador
 	 */
-	private static void printR2(String[] received, String userName) {
+	private static void printR1(String[] received, String userName) {
 		StringBuilder sb = new StringBuilder ();
 		if (!received[0].equals(userName))
 			sb.append(received[0] + ": " + received[3]);
@@ -397,12 +399,12 @@ public class myWhats {
 	}
 	
 	/**
-	 * 
-	 * @param received
-	 * @param userName
-	 * @param group
+	 * imprime na consola do cliente o -r com 0 argumentos
+	 * @param received nome dos ficheiros e data
+	 * @param userName nome do utilizador
+	 * @param group boolean para diferenciar a impressao, true se for para um grupo ou false se for para um utilizador
 	 */
-	private static void printR1(String[] received, String userName,boolean group) {
+	private static void printR0(String[] received, String userName,boolean group) {
 		if (group)
 			System.out.println("Contact: " + received[1]);
 		else{
@@ -411,6 +413,6 @@ public class myWhats {
 			else
 				System.out.println("Contact: " + received[0]);
 		}
-		printR2(received,userName);
+		printR1(received,userName);
 	}
 }
