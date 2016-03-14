@@ -40,9 +40,16 @@ public class Errors {
 	}
 
 	/**
-	 * Metodo utilizado para verificar o input do utilizador.
-	 * @param args input do utilizador
-	 * @return 1 se tudo correr bem , ou um valor negativo em caso de erro
+	 * -1 x == null
+	 * -2 flag -p n e a primeira
+	 * -3 argumento da pass e uma flag
+	 * -4 argumentos insuficientes para a pass
+	 * -5 flag invalida a seguir ao -p
+	 * -6 ordem errada da flag
+	 * -7 argumentos das flag invalidos
+	 * -10 falta password
+	 * @param args lista de argumentos recebidos no cliente
+	 * @return o tipo de erro em int
 	 */
 	public static int validate (String [] args){
 		StringBuilder y = new StringBuilder ();

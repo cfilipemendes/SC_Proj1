@@ -162,8 +162,11 @@ public class myWhatsServer{
 										outStream.writeObject(1);
 										if (numArgs == 2)
 											confirm = skell.doR1operation(username,arguments[1],outStream,false);
-										else
+										else {
 											confirm = skell.doR2operation(username,arguments[1],arguments[2],outStream,false);
+											if (confirm == -10)
+												break;
+										}
 									}
 									else{
 										outStream.writeObject(-7);

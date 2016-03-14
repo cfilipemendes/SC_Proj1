@@ -446,7 +446,7 @@ public class PersistentFiles {
 				return f;
 		return null;
 	}
-	
+
 	/**
 	 * existe um ficheiro especifico no grupo
 	 * @param group nome do grupo
@@ -476,18 +476,19 @@ public class PersistentFiles {
 			myFile = userHasFile(from,contact,fich);
 		else
 			myFile = groupHasFile(contact,fich);
-
-		if (myFile == null)
-			return -10;
-		int fileSize = (int) myFile.length();
 		try {
+			if (myFile == null){
+				outStream.writeObject(-10);
+				return -10;			
+			}
+
+			int fileSize = (int) myFile.length();
 			outStream.writeObject(fileSize);
 			byte [] byteArray = new byte [fileSize];
 			FileInputStream fis = new FileInputStream (myFile);
 			BufferedInputStream bis = new BufferedInputStream (fis);
 			int bytesRead;
 			int current = 0; 
-
 
 			int nCiclo = fileSize/PACKET_SIZE;
 			int resto = fileSize%PACKET_SIZE;
@@ -660,7 +661,7 @@ public class PersistentFiles {
 					}
 				} 
 			}
-			
+
 			myDir = new File (new File(".").getAbsolutePath() + "//" + groupsDir);
 			i = myDir.listFiles().length;
 			outStream.writeObject(i);
@@ -715,7 +716,7 @@ public class PersistentFiles {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * organiza os ficheiros de uma directoria por ordem de criacao
 	 * @param myDir nome da directoria a ser organizada

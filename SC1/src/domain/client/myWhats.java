@@ -254,6 +254,9 @@ public class myWhats {
 	private static void getFileFromServer(String fich, ObjectInputStream inStream) {
 		try {
 			int fileSize = (int) inStream.readObject();
+			if (fileSize < 0){
+				return;
+			}
 			byte [] byteArray = new byte [fileSize];
 			FileOutputStream fosFrom = new FileOutputStream(new File(".").getAbsolutePath() + 
 					"//" + fich);
@@ -347,22 +350,6 @@ public class myWhats {
 		}
 
 	}
-
-	/**
-	 * -1 x == null
-	 * -2 flag -p n e a primeira
-	 * -3 argumento da pass e uma flag
-	 * -4 argumentos insuficientes para a pass
-	 * -5 flag invalida a seguir ao -p
-	 * -6 ordem errada da flag
-	 * -7 argumentos das flag invalidos
-	 * -10 falta password
-	 * @param args lista de argumentos recebidos no cliente
-	 * @return o tipo de erro em int
-	 */
-	
-
-
 
 	/**
 	 * verifica se o endereco ip eh valido
