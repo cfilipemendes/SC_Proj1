@@ -102,7 +102,7 @@ public class PersistentFiles {
 	 * @param username nome do utilizador
 	 * @param password password do utilizador
 	 */
-	public void addUser(String username, String password) {
+	public synchronized void addUser(String username, String password) {
 		try {
 			BufferedWriter bw = new BufferedWriter(new FileWriter(users,true));
 			bw.append(username + ":" + password);
@@ -123,7 +123,7 @@ public class PersistentFiles {
 	 * @param mess conteudo da mensagem
 	 * @param from nome de quem enviou
 	 */
-	public void newMessage(String to, String mess, String from) {
+	public synchronized void newMessage(String to, String mess, String from) {
 		File dir = new File (new File(".").getAbsolutePath() + "//" + usersDir + "//" + from + "//" + to);
 		if (!dir.exists())
 			dir.mkdir();
@@ -156,7 +156,7 @@ public class PersistentFiles {
 	 * @param mess conteudo da mensagem
 	 * @param from nome de quem enviou a mensagem
 	 */
-	public void newGroupMessage(String groupname, String mess, String from) {
+	public synchronized void newGroupMessage(String groupname, String mess, String from) {
 		try {
 			data = GregorianCalendar.getInstance().getTime();
 			File message = new File (new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname + "//" + from + "_" + groupname + "_" + sdf.format(data) + ".txt");
@@ -179,7 +179,7 @@ public class PersistentFiles {
 	 * @param groupname nome do grupo
 	 * @param creator nome do creador do grupo
 	 */
-	public void createGroup (String groupname, String creator){
+	public synchronized void createGroup (String groupname, String creator){
 		File dir = new File (new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname);
 		if (!dir.exists())
 			dir.mkdir();
@@ -205,7 +205,7 @@ public class PersistentFiles {
 	 * @param groupname nome do grupo ao qual o utilizador vai ser adicionado
 	 * @param user nome do utilizador que vai ser adicionado
 	 */
-	public void addUserToGroup (String groupname, String user){
+	public synchronized void addUserToGroup (String groupname, String user){
 		File group = new File(new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname + "//" + groupname + ".txt");
 		BufferedWriter bw;
 		try {
@@ -244,7 +244,7 @@ public class PersistentFiles {
 	 * @param groupname nome do grupo ao qual o utilizador vai ser removido
 	 * @param user nome do utilizador que vai ser removido
 	 */
-	public void rmFromGroup(String groupname, String user){
+	public synchronized void rmFromGroup(String groupname, String user){
 		File group = new File(new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname + "//" + groupname + ".txt");
 		if (creatorOfGroup (groupname).equals(user)){
 			File groupDir = new File(new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname);
@@ -282,7 +282,7 @@ public class PersistentFiles {
 	 * metodo para apagar todos os ficheiros de uma directoria
 	 * @param dir nome da directoria
 	 */
-	public void cleanDir (File dir) {
+	public synchronized void cleanDir (File dir) {
 		for(File f : dir.listFiles()){
 			f.delete();
 		}
@@ -342,7 +342,7 @@ public class PersistentFiles {
 	 * @param fileSize tamanho do ficheiro em bytes
 	 * @param inStream stream pela qual vai acontecer a comunicacao cliente servidor
 	 */
-	public void saveFile(String contact, String fich, String username, int fileSize, ObjectInputStream inStream) {
+	public synchronized void saveFile(String contact, String fich, String username, int fileSize, ObjectInputStream inStream) {
 		try {
 			data = GregorianCalendar.getInstance().getTime();
 			byte [] byteArray = new byte [fileSize];
@@ -396,7 +396,7 @@ public class PersistentFiles {
 	 * @param fileSize tamanho do ficheiro em bytes
 	 * @param inStream stream pela qual vai acontecer a comunicacao cliente servidor
 	 */
-	public void saveFileGroup(String contact, String fich, String username, int fileSize, ObjectInputStream inStream) {
+	public synchronized void saveFileGroup(String contact, String fich, String username, int fileSize, ObjectInputStream inStream) {
 		try {
 			data = GregorianCalendar.getInstance().getTime();
 			byte [] byteArray = new byte [fileSize];

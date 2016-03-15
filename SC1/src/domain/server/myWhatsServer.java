@@ -139,6 +139,10 @@ public class myWhatsServer{
 								break;
 							case "-f":
 								int fileSize = (int) inStream.readObject();
+								if (fileSize < 0){
+									closeThread();
+									return;
+								}
 								if (skell.isUser(arguments[1]) != null)
 									skell.doFoperation(arguments[1],arguments[2],username,fileSize,inStream);
 								else if (skell.isGroup(arguments[1]) != null)
@@ -170,11 +174,13 @@ public class myWhatsServer{
 									}
 									else{
 										outStream.writeObject(-7);
+										closeThread();
 										return;
 									}
 								}
 								else{
 									outStream.writeObject(-1);
+									closeThread();
 									return;
 								}
 								break;

@@ -125,9 +125,16 @@ public class myWhats {
 			closeCon();
 			return;
 		}
+		//envio de ficheiro
 		if(argsFinal.length >= 1){
 			if (argsFinal[0].equals("-f")){
 				File myFile = new File (argsFinal [2]);
+				if (!myFile.exists() || myFile.isDirectory()){
+					out.writeObject(-1);
+					System.err.println(Errors.errorConfirm(-11));
+					closeCon();
+					return;
+				}
 				int fileSize = (int) myFile.length();
 				byte [] byteArray = new byte [fileSize];
 				FileInputStream fis = new FileInputStream (myFile);
@@ -158,13 +165,14 @@ public class myWhats {
 
 			}
 
+			//recepcao de ficheiros
 			else if (argsFinal[0].equals("-r")){
 				int check;
 				//  -r contacto file
 				if(argsFinal.length == 3){
 					check = (int)in.readObject();
 					if (check != 1){
-						System.out.println("Deu cana no -r 3!!!!!!");
+						System.out.println(Errors.errorConfirm(check));
 						return;
 					}
 					System.out.println("Entrou no getFileFromServer");
@@ -174,7 +182,7 @@ public class myWhats {
 				else if(argsFinal.length == 2){
 					check = (int)in.readObject();
 					if (check != 1){
-						System.out.println("Deu cana no -r 2!!!!!!");
+						System.out.println(Errors.errorConfirm(check));
 						return;
 					}
 					System.out.println("Entrou no getContactConv");

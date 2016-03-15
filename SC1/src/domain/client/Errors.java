@@ -33,7 +33,9 @@ public class Errors {
 		case -9:
 			return "Nao existe esse grupo";
 		case -10:
-			return "Ficheiro nao existe no servidor";
+			return "Ficheiro nao existe no servidor!";
+		case -11:
+			return "Ficheiro nao existe no cliente!";
 		default :
 			return "Resultado nao conclusivo.";
 		}
