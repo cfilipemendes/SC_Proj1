@@ -94,8 +94,15 @@ public class myWhats {
 		out.writeObject(userName);
 		out.writeObject(pwd);
 		int fromServer = (int) in.readObject();
+		int tries = 2;
 		while(fromServer == PW_ERROR){
-			System.err.print("Password ERRADA! ");
+			if (tries == 0){
+				System.err.print("Password ERRADA! Acabaram-se as tentativas");
+				closeCon();
+				return;
+			}
+			System.err.print("Password ERRADA!\nTem " + tries + " tentativa(s)!\n");
+			tries --;
 			pwd = retryPwd(sc);
 			out.writeObject(pwd);
 			fromServer = (int) in.readObject();

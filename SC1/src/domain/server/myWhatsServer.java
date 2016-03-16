@@ -96,8 +96,15 @@ public class myWhatsServer{
 						}
 					}
 					else{ // senao, como EXISTE USER faz autenticacao
+						int i = 2;
 						while(!pwAux.equals(password)){
 							System.out.println("Nao fez a autenticacao, user:" + username + " : " + password);
+							if(i == 0){
+								outStream.writeObject(PW_ERROR);
+								closeThread();
+								return;
+							}
+							i--;
 							outStream.writeObject(PW_ERROR);
 							password = (String) inStream.readObject();
 						}

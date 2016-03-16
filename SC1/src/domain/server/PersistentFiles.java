@@ -455,9 +455,14 @@ public class PersistentFiles {
 	 */
 	public File groupHasFile (String group, String fich) {
 		File myDir = new File (new File(".").getAbsolutePath() + "//" + groupsDir + "//" + group);
-		for (File f : myDir.listFiles())
-			if (f.toString().contains(fich))
-				return f;
+		String nameAux;
+		for (File f : myDir.listFiles()){
+			nameAux = (f.getAbsolutePath().substring(f.getAbsolutePath().lastIndexOf("/")+1));
+			System.out.println(nameAux);
+			if (!nameAux.startsWith(".") && (nameAux.split("_").length == 5))
+				if (nameAux.split("_")[4].equals(fich))
+					return f;
+		}
 		return null;
 	}
 
