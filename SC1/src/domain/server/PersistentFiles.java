@@ -344,6 +344,14 @@ public class PersistentFiles {
 	 */
 	public synchronized void saveFile(String contact, String fich, String username, int fileSize, ObjectInputStream inStream) {
 		try {
+			File dir = new File (new File(".").getAbsolutePath() + "//" + usersDir + "//" + contact + "//" + username);
+			if (!dir.exists())
+				dir.mkdir();
+			
+			dir = new File (new File(".").getAbsolutePath() + "//" + usersDir + "//" + username + "//" + contact);
+			if (!dir.exists())
+				dir.mkdir();
+			
 			data = GregorianCalendar.getInstance().getTime();
 			byte [] byteArray = new byte [fileSize];
 			FileOutputStream fosFrom = new FileOutputStream(new File(".").getAbsolutePath() + 
