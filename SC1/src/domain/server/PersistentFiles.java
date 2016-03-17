@@ -458,7 +458,6 @@ public class PersistentFiles {
 		String nameAux;
 		for (File f : myDir.listFiles()){
 			nameAux = (f.getAbsolutePath().substring(f.getAbsolutePath().lastIndexOf("/")+1));
-			System.out.println(nameAux);
 			if (!nameAux.startsWith(".") && (nameAux.split("_").length == 5))
 				if (nameAux.split("_")[4].equals(fich))
 					return f;

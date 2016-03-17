@@ -19,13 +19,13 @@ public class myWhatsServer{
 	private final String USERS_PWS_FILE = "usersAndPws";
 	private final String GROUPS_DIR = "groups";
 	private final String USERS_DIR = "users";
+	private final int CHAR_ERROR = -65;
 	private final int PW_ERROR = -66;
 	private final int ARGS_ERROR = -67;
 	private final int REG_ERROR = -68;
 	private server_skell skell;
 
 	public static void main(String[] args) {
-		System.out.println("servidor: main");
 		myWhatsServer server = new myWhatsServer();
 		server.startServer(Integer.parseInt(args[0]));
 	}
@@ -68,7 +68,6 @@ public class myWhatsServer{
 		ServerThread(Socket inSoc, server_skell skell) {
 			socket = inSoc;
 			this.skell = skell;
-			System.out.println("thread do server para cada cliente");
 		}
 
 		public void run(){
@@ -87,6 +86,11 @@ public class myWhatsServer{
 					//Primeiro verifica que se nao houver user ele eh criado
 					if((pwAux = skell.isUser(username)) == null){
 						if (skell.isGroup(username) == null){
+							if (username.startsWith("\\.") || username.contains("-") || username.contains("/") || username.contains("_")){
+								outStream.writeObject(CHAR_ERROR);
+								closeThread();
+								return;
+							}
 							skell.createUser(username,password);
 						}
 						else{
@@ -98,7 +102,6 @@ public class myWhatsServer{
 					else{ // senao, como EXISTE USER faz autenticacao
 						int i = 2;
 						while(!pwAux.equals(password)){
-							System.out.println("Nao fez a autenticacao, user:" + username + " : " + password);
 							if(i == 0){
 								outStream.writeObject(PW_ERROR);
 								closeThread();
@@ -150,6 +153,10 @@ public class myWhatsServer{
 									closeThread();
 									return;
 								}
+								if (arguments[2].startsWith("\\.") || arguments[2].contains("-") || arguments[2].contains("/") || arguments[2].contains("_")){
+									closeThread();
+									return;
+								}
 								if (skell.isUser(arguments[1]) != null)
 									skell.doFoperation(arguments[1],arguments[2],username,fileSize,inStream);
 								else if (skell.isGroup(arguments[1]) != null)
@@ -194,7 +201,11 @@ public class myWhatsServer{
 							case "-a":
 								if (skell.isUser(arguments[1]) != null){
 									if (skell.isUser(arguments[2]) == null){
-										confirm = skell.doAoperation(arguments[1],arguments[2],username);
+										if (arguments[2].startsWith("\\.") || arguments[2].contains("-") || arguments[2].contains("/") || arguments[2].contains("_")){
+											confirm = CHAR_ERROR;
+										}
+										else
+											confirm = skell.doAoperation(arguments[1],arguments[2],username);
 									}
 									else
 										confirm = REG_ERROR;
@@ -208,7 +219,6 @@ public class myWhatsServer{
 							}
 						}
 					}
-					System.out.println("Confirm = " + confirm);
 					outStream.writeObject(confirm);
 
 				}catch (ClassNotFoundException e1) {

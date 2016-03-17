@@ -3,6 +3,9 @@ package domain.client;
 public class Errors {
 	
 	private static final String flags = "-p-m-f-r-a-d";
+	private final static int CHAR_ERROR = -65;
+	private final static int ARGS_ERROR = -67;
+	private final static int REG_ERROR = -68;
 	
 	/**
 	 * Metodo utilizado exclusivamente para definir a lista de erros que o 
@@ -15,7 +18,7 @@ public class Errors {
 		case 1: 	
 			return "Operacao Realizada com Sucesso!";
 		case -1:
-			return "Destinatario da mensagem nao existe!";
+			return "O cliente nao existe";
 		case -2:
 			return "Input insuficiente";
 		case -3:
@@ -36,6 +39,14 @@ public class Errors {
 			return "Ficheiro nao existe no servidor!";
 		case -11:
 			return "Ficheiro nao existe no cliente!";
+		case -12:
+			return "O ficheiro nao pode conter os seguintes caracteres: _,/,-,.";
+		case CHAR_ERROR:
+			return "O nome nao pode conter os seguintes caracteres: _,/,-,.";
+		case ARGS_ERROR:
+			return "O servidor recebeu dados CORROMPIDOS!";
+		case REG_ERROR:
+			return "O nome ja existe";
 		default :
 			return "Resultado nao conclusivo.";
 		}

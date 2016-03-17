@@ -191,7 +191,6 @@ public class server_skell {
 	 * @param from emissor da mensagem
 	 */
 	public void doMoperation(String to, String mess, String from) {
-		System.out.println("doMoperation com destinatario: " + to + " e com mensagem " + mess);
 		files.newMessage(to, mess, from);
 	}
 	/**
@@ -201,7 +200,6 @@ public class server_skell {
 	 * @param from nome do emissor da mensagem
 	 */
 	public void doMGroupOperation(String groupname, String mess, String from) {
-		System.out.println("doMGroupOperation com grupo: " + groupname + " e com mensagem " + mess);
 		files.newGroupMessage(groupname, mess, from);
 	}
 
@@ -213,7 +211,6 @@ public class server_skell {
 	 */
 	public void doFoperation(String contact, String fich, String username, int fileSize,ObjectInputStream inStream) {
 		files.saveFile(contact,fich,username,fileSize,inStream);
-		System.out.println("doFoperation com contacto: " + contact + " e com ficheiro " + fich);
 	}
 	
 	/**
@@ -226,7 +223,6 @@ public class server_skell {
 	 */
 	public void doFoperationGroup(String contact, String fich, String username, int fileSize,ObjectInputStream inStream) {	
 		files.saveFileGroup(contact,fich,username,fileSize,inStream);
-		System.out.println("doFoperation com contacto: " + contact + " e com ficheiro " + fich);
 	}
 
 	/**
@@ -235,7 +231,6 @@ public class server_skell {
 	 * @param outStream stream de dados do socket 
 	 */
 	public void doR0operation(String username, ObjectOutputStream outStream) {
-		System.out.println("doR0operation");
 		files.getLatestConvs(username,outStream);
 	}
 
@@ -248,7 +243,6 @@ public class server_skell {
 	 * @return 1 em caso de sucesso
 	 */
 	public int doR1operation(String username, String contact, ObjectOutputStream outStream,boolean user) {
-		System.out.println("doR1operation com contacto: " + contact);
 		return files.getContactConv(username,contact,outStream,user);
 	}
 
@@ -260,7 +254,6 @@ public class server_skell {
 	 * @return -10 caso o ficheiro nao exista
 	 */
 	public int doR2operation(String from,String contact, String fich,ObjectOutputStream outStream,boolean user) {
-		System.out.println("doR2operation com contacto: " + contact + " e com ficheiro " + fich);
 		return files.getFile(from,contact,fich,outStream,user);
 	}
 
@@ -275,7 +268,6 @@ public class server_skell {
 	 * @throws IOException 
 	 */
 	public int doAoperation(String user, String group, String from) throws IOException {
-		System.out.println("doAoperation com user: " + user + " e com grupo " + group);
 		int confirm = 1;
 		if (from.equals(user))
 			return -5;
@@ -310,7 +302,6 @@ public class server_skell {
 	 * @throws IOException 
 	 */
 	public int doDoperation(String user, String group, String from) throws IOException {
-		System.out.println("doDoperation com user: " + user + " e com grupo " + group);
 		String creator;
 		int confirm = 1;
 		if((creator = files.hasGroup(group)) != null){

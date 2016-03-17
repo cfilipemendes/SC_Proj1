@@ -22,6 +22,7 @@ public class myWhats {
 	private static final String flags = "-p-m-f-r-a-d";
 	private static final Pattern PATTERN = Pattern.compile(
 			"^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
+	private final static int CHAR_ERROR = -65;
 	private final static int PW_ERROR = -66;
 	private final static int ARGS_ERROR = -67;
 	private final static int REG_ERROR = -68;
@@ -107,8 +108,13 @@ public class myWhats {
 			out.writeObject(pwd);
 			fromServer = (int) in.readObject();
 		}
+		if (fromServer == CHAR_ERROR){
+			System.err.println(Errors.errorConfirm(CHAR_ERROR));
+			closeCon();
+			return;
+		}
 		if (fromServer == REG_ERROR){
-			System.err.println("Nome ja existente!");
+			System.err.println(Errors.errorConfirm(REG_ERROR));
 			closeCon();
 			return;
 		}
@@ -123,18 +129,20 @@ public class myWhats {
 		//verifica se os dados foram bem recebidos pelo servidor
 		fromServer = (int) in.readObject();
 		if (fromServer == ARGS_ERROR){
-			System.err.println("O servidor recebeu dados CORROMPIDOS!");
+			System.err.println(Errors.errorConfirm(ARGS_ERROR));
 			closeCon();
 			return;
 		}
-		else if (fromServer == REG_ERROR){
-			System.err.println("Nome ja existente!");
-			closeCon();
-			return;
-		}
+		
 		//envio de ficheiro
 		if(argsFinal.length >= 1){
 			if (argsFinal[0].equals("-f")){
+				if (argsFinal[2].startsWith("\\.") || argsFinal[2].contains("-") || argsFinal[2].contains("/") || argsFinal[2].contains("_")){
+					out.writeObject(-1);
+					System.err.println(Errors.errorConfirm(-12));
+					closeCon();
+					return;
+				}
 				File myFile = new File (argsFinal [2]);
 				if (!myFile.exists() || myFile.isDirectory()){
 					out.writeObject(-1);
@@ -179,20 +187,17 @@ public class myWhats {
 				if(argsFinal.length == 3){
 					check = (int)in.readObject();
 					if (check != 1){
-						System.out.println(Errors.errorConfirm(check));
 						return;
 					}
-					System.out.println("Entrou no getFileFromServer");
 					getFileFromServer(argsFinal[2],in);
 				}
 				// -r contacto ultima mensagem
 				else if(argsFinal.length == 2){
 					check = (int)in.readObject();
 					if (check != 1){
-						System.out.println(Errors.errorConfirm(check));
+						System.err.println(Errors.errorConfirm(check));
 						return;
 					}
-					System.out.println("Entrou no getContactConv");
 					getContactConv(in, userName);
 				}
 				// -r que recebe tudo
@@ -202,7 +207,7 @@ public class myWhats {
 			}
 		}
 		int confirm = (int) in.readObject();
-		System.out.println(Errors.errorConfirm(confirm));
+		System.err.println(Errors.errorConfirm(confirm));
 		closeCon();
 	}
 	// ----------------------  FIM DO MAIN -----------------------------
