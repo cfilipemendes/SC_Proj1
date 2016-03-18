@@ -294,7 +294,6 @@ public class myWhats {
 				if (bytesRead > 0)
 					current += bytesRead;
 			}
-
 			if (resto > 0){
 				bytesRead = inStream.read(byteArray, current,resto);
 				bosFrom.write(byteArray,current,bytesRead);

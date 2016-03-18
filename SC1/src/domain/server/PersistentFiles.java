@@ -230,6 +230,7 @@ public class PersistentFiles {
 		try {
 			br = new BufferedReader(new FileReader(group));
 			creator = br.readLine();
+			br.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -245,9 +246,9 @@ public class PersistentFiles {
 	 * @param user nome do utilizador que vai ser removido
 	 */
 	public synchronized void rmFromGroup(String groupname, String user){
-		File group = new File(new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname + "//" + groupname + ".txt");
+		File group = new File(new File("").getAbsolutePath() + "//" + groupsDir + "//" + groupname + "//" + groupname + ".txt");
 		if (creatorOfGroup (groupname).equals(user)){
-			File groupDir = new File(new File(".").getAbsolutePath() + "//" + groupsDir + "//" + groupname);
+			File groupDir = new File(new File("").getAbsolutePath() + File.separator + groupsDir + File.separator + groupname);
 			cleanDir(groupDir);
 			groupDir.delete();
 		}
@@ -465,7 +466,7 @@ public class PersistentFiles {
 		File myDir = new File (new File(".").getAbsolutePath() + "//" + groupsDir + "//" + group);
 		String nameAux;
 		for (File f : myDir.listFiles()){
-			nameAux = (f.getAbsolutePath().substring(f.getAbsolutePath().lastIndexOf("/")+1));
+			nameAux = (f.getAbsolutePath().substring(f.getAbsolutePath().lastIndexOf(File.separator)+1));
 			if (!nameAux.startsWith(".") && (nameAux.split("_").length == 5))
 				if (nameAux.split("_")[4].equals(fich))
 					return f;
@@ -552,7 +553,7 @@ public class PersistentFiles {
 			File[] aux = sortFiles(myDir);
 
 			for (File f : aux){
-				nameAux = (f.getAbsolutePath().substring(f.getAbsolutePath().lastIndexOf("/")+1));
+				nameAux = (f.getAbsolutePath().substring(f.getAbsolutePath().lastIndexOf(File.separator)+1));
 				if (!nameAux.startsWith(".")){
 					finalF = new String [4];
 					fileName = nameAux.split("_");
@@ -636,10 +637,10 @@ public class PersistentFiles {
 					outStream.flush();
 				}
 				else{
-					nameAux = (aux[i].getAbsolutePath().substring(aux[i].getAbsolutePath().lastIndexOf("/")+1));
+					nameAux = (aux[i].getAbsolutePath().substring(aux[i].getAbsolutePath().lastIndexOf(File.separator)+1));
 					while((nameAux.startsWith(".")) && (aux.length > i+1)){
 						i++;
-						nameAux = (aux[i].getAbsolutePath().substring(aux[i].getAbsolutePath().lastIndexOf("/")+1));
+						nameAux = (aux[i].getAbsolutePath().substring(aux[i].getAbsolutePath().lastIndexOf(File.separator)+1));
 					}
 					if (!nameAux.startsWith(".")){
 						finalF = new String [4];
@@ -685,16 +686,16 @@ public class PersistentFiles {
 					outStream.writeObject(null);
 					outStream.flush();
 				}
-				else if (!hasUserInGroup(f.getAbsolutePath().substring(f.getAbsolutePath().lastIndexOf("/")+1), username)){
+				else if (!hasUserInGroup(f.getAbsolutePath().substring(f.getAbsolutePath().lastIndexOf(File.separator)+1), username)){
 					outStream.writeObject(null);
 					outStream.flush();
 				}
 				else{
-					nameAux = (aux[i].getAbsolutePath().substring(aux[i].getAbsolutePath().lastIndexOf("/")+1));
-					while((nameAux.startsWith(".") || nameAux.equals(f.getAbsolutePath().substring(f.getAbsolutePath().lastIndexOf("/")+1) + ".txt"))
+					nameAux = (aux[i].getAbsolutePath().substring(aux[i].getAbsolutePath().lastIndexOf(File.separator)+1));
+					while((nameAux.startsWith(".") || nameAux.equals(f.getAbsolutePath().substring(f.getAbsolutePath().lastIndexOf(File.separator)+1) + ".txt"))
 							&& (aux.length > i+1)){
 						i++;
-						nameAux = (aux[i].getAbsolutePath().substring(aux[i].getAbsolutePath().lastIndexOf("/")+1));
+						nameAux = (aux[i].getAbsolutePath().substring(aux[i].getAbsolutePath().lastIndexOf(File.separator)+1));
 					}
 					if (!nameAux.startsWith(".")){
 						finalF = new String [4];
