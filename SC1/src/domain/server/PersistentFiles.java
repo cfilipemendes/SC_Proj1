@@ -740,14 +740,10 @@ public class PersistentFiles {
 		Arrays.sort(aux, new Comparator()		
 		{
 			public int compare(final Object o1, final Object o2){
-				return new Long(((File)o1).lastModified()).compareTo(new Long(((File) o2).lastModified()));
+				return new Long(((File)o2).lastModified()).compareTo(new Long(((File) o1).lastModified()));
 			}
 		});
 		return aux;
 	}
 
 }
-
-
-
-
